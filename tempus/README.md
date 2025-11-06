@@ -1,9 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TempusMail
+
+> A fast and secure disposable temporary email service built with Next.js
+
+**[Live Demo →](YOUR_DEPLOYED_URL_HERE)**
+
+## Overview
+
+TempusMail is a privacy-focused temporary email service that generates disposable email addresses instantly—no sign-up required. Perfect for website registrations, online verifications, or testing services while keeping your real inbox safe from spam and unwanted messages.
+
+### Key Features
+
+- ⚡ **Instant Generation** - Create temporary email addresses in seconds
+- 🔒 **Privacy First** - No registration or personal information required
+- 📬 **Real-time Updates** - Receive emails instantly with auto-refresh
+- 🌓 **Dark/Light Mode** - Customizable theme for comfortable viewing
+- 📱 **Responsive Design** - Works seamlessly on all devices
+- ⏱️ **Auto-Expiry** - Emails automatically expire after 24 hours
+- 📝 **Blog Integration** - Notion-powered blog for updates and guides
+- 🎯 **Clean UI** - Modern, intuitive interface built with Tailwind CSS
+
+## Tech Stack
+
+- **Framework:** [Next.js 14](https://nextjs.org/) (App Router)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
+- **Email Service:** [@cemalgnlts/mailjs](https://www.npmjs.com/package/@cemalgnlts/mailjs)
+- **CMS:** [Notion API](https://developers.notion.com/)
+- **Deployment:** Vercel (recommended)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18.x or higher
+- npm, yarn, pnpm, or bun package manager
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/prince7z/tempus.git
+cd tempus
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+# or
+bun install
+```
+
+3. Set up environment variables (if needed):
+```bash
+# Create a .env.local file for Notion integration (optional)
+# NOTION_API_KEY=your_notion_api_key
+# NOTION_DATABASE_ID=your_notion_database_id
+```
+
+4. Run the development server:
 ```bash
 npm run dev
 # or
@@ -14,23 +72,86 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+tempus/
+├── app/
+│   ├── api/              # API routes
+│   │   ├── blog/         # Blog API endpoints
+│   │   └── temp/         # Temporary email API
+│   ├── blog/             # Blog pages
+│   ├── components/       # Reusable React components
+│   │   ├── Dialog.tsx
+│   │   ├── Icons.tsx
+│   │   ├── PremiumDialog.tsx
+│   │   ├── ThemeProvider.tsx
+│   │   ├── ThemeToggle.tsx
+│   │   └── Toast.tsx
+│   ├── links/            # Links/resources page
+│   ├── globals.css       # Global styles
+│   ├── layout.tsx        # Root layout
+│   └── page.tsx          # Home page
+├── public/               # Static assets
+└── [config files]        # TypeScript, Tailwind, Next.js configs
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Features in Detail
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Temporary Email Generation
+- Generates disposable email addresses using the MailJS API
+- 10-minute countdown timer with visual progress indicator
+- Copy email address to clipboard functionality
+- Automatic cleanup after expiration
 
-## Deploy on Vercel
+### Email Management
+- Real-time email inbox with auto-refresh
+- View email details in a modal dialog
+- HTML content rendering support
+- Message timestamp and sender information
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Theme System
+- Light and dark mode support
+- Persistent theme preference using localStorage
+- Smooth theme transitions
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Blog System
+- Integration with Notion as a headless CMS
+- Dynamic blog post listing and individual post pages
+- Tags and cover image support
+- SEO-friendly routing
+
+## API Routes
+
+### `/api/temp`
+- **GET:** Generates a new temporary email address
+- Returns email address, ID, and authentication token
+
+### `/api/blog`
+- **GET:** Fetches all blog posts from Notion database
+- Returns array of blog posts with metadata
+
+### `/api/blog/[id]`
+- **GET:** Fetches a specific blog post by ID
+- Returns detailed blog post content
+
+## Configuration
+
+### Tailwind CSS
+Custom configuration in `tailwind.config.js` with theme extensions and custom utilities.
+
+### TypeScript
+Strict type checking enabled in `tsconfig.json` for enhanced code quality.
+
+
+
+Built with ❤️ using Next.js and TypeScript
