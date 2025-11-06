@@ -7,10 +7,10 @@ const notion = new Client({
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const pageId = params.id;
+    const { id: pageId } = await params;
 
     // Get page details
     const page = await notion.pages.retrieve({ page_id: pageId });

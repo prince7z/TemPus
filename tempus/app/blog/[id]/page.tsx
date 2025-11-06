@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Icons from "../../components/Icons";
+import { use } from "react";
 
 interface BlogPost {
   id: string;
@@ -14,13 +15,14 @@ interface BlogPost {
   content: any[];
 }
 
-export default function BlogPost({ params }: { params: { id: string } }) {
+export default function BlogPost({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`/api/blog/${params.id}`)
+    fetch(`/api/blog/${resolvedParams.id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.error) {
@@ -34,7 +36,7 @@ export default function BlogPost({ params }: { params: { id: string } }) {
         setError("Failed to load blog post");
         setLoading(false);
       });
-  }, [params.id]);
+  }, [resolvedParams.id]);
 
   const renderBlock = (block: any) => {
     const type = block.type;
