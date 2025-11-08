@@ -2,14 +2,14 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { Icons } from './components/Icons';
-import { ThemeToggle } from './components/ThemeToggle';
-import { Dialog } from './components/Dialog';
-import { PremiumDialog } from './components/PremiumDialog';
 import { Toast } from './components/Toast';
-import CardSwap, { Card } from './components/CardSwap';
-import CardNav, { CardNavItem } from './components/cardNav';
-import { BlackMailLogo } from './components/BlackMailLogo';
+import { BuyEmailDialog } from './components/BuyEmailDialog';
+import CardNav from './components/cardNav';
+import type { CardNavItem } from './components/cardNav';
+import Image from 'next/image';
+import './styles/blackmail-theme.css';
 import axios from 'axios';
+import { set } from 'mongoose';
 
 
 interface Email {
@@ -41,24 +41,24 @@ interface FAQ {
 
 const faqs: FAQ[] = [
   {
-    question: 'What is TempusMail and how does it work?',
-    answer: 'TempusMail is a fast and secure disposable temporary email service that instantly generates a temporary email address for you—no sign-up required. Easily use our temp mail generator to receive emails for website registrations, online verifications, or testing services while keeping your real inbox safe from spam and unwanted messages.'
+    question: 'What is BlackMail and how does it work?',
+    answer: 'BlackMail is a fast and secure disposable temporary email service that instantly generates a temporary email address for you—no sign-up required. Easily use our temp mail generator to receive emails for website registrations, online verifications, or testing services while keeping your real inbox safe from spam and unwanted messages.'
   },
   {
-    question: 'How is TempusMail different from regular email services?',
-    answer: 'TempusMail provides disposable email addresses that automatically expire, protecting your privacy and preventing spam. Unlike regular email services, no registration is required and addresses are temporary.'
+    question: 'How is BlackMail different from regular email services?',
+    answer: 'BlackMail provides disposable email addresses that automatically expire, protecting your privacy and preventing spam. Unlike regular email services, no registration is required and addresses are temporary.'
   },
   {
-    question: 'Is TempusMail anonymous and secure?',
-    answer: 'Yes, TempusMail is completely anonymous and secure. We don\'t collect any personal information and all emails are automatically deleted after expiration.'
+    question: 'Is BlackMail anonymous and secure?',
+    answer: 'Yes, BlackMail is completely anonymous and secure. We don\'t collect any personal information and all emails are automatically deleted after expiration.'
   },
   {
     question: 'How long do temporary emails last?',
-    answer: 'Temporary emails last for 60 minutes by default, but you can extend this time or delete them earlier if needed. Premium users get longer duration options.'
+    answer: 'Temporary emails last for 10 minutes by default, but you can extend this time or delete them earlier if needed. Premium users get longer duration options.'
   },
   {
-    question: 'Can I use TempusMail for important accounts?',
-    answer: 'We recommend using TempusMail only for temporary purposes like testing, verification, or avoiding spam. For important accounts, use a permanent email service.'
+    question: 'Can I use BlackMail for important accounts?',
+    answer: 'We recommend using BlackMail only for temporary purposes like testing, verification, or avoiding spam. For important accounts, use a permanent email service.'
   }
 ];
 
@@ -68,10 +68,10 @@ const navItems: CardNavItem[] = [
     bgColor: "var(--bg-primary)",
     textColor: "var(--text-primary)",
     links: [
-      { label: "Temporary Email", href: "/features/temp-email", ariaLabel: "Learn about temporary email" },
-      { label: "Auto Delete", href: "/features/auto-delete", ariaLabel: "Auto delete feature" },
-      { label: "Privacy Protection", href: "/features/privacy", ariaLabel: "Privacy protection" },
-      { label: "API Access", href: "/features/api", ariaLabel: "API access" }
+      { label: "Temporary Email", href: "/policy",  ariaLabel: "Learn about temporary email" },
+      { label: "Auto Delete", href: "/policy", ariaLabel: "Auto delete feature" },
+      { label: "Privacy Protection", href: "/policy", ariaLabel: "Privacy protection" },
+      { label: "API Access", href: "/policy", ariaLabel: "API access" }
     ]
   },
   {
@@ -79,10 +79,10 @@ const navItems: CardNavItem[] = [
     bgColor: "var(--bg-primary)",
     textColor: "var(--text-primary)", 
     links: [
-      { label: "Help Center", href: "/support/help", ariaLabel: "Visit help center" },
-      { label: "Contact Us", href: "/support/contact", ariaLabel: "Contact support" },
-      { label: "FAQ", href: "/support/faq", ariaLabel: "Frequently asked questions" },
-      { label: "Live Chat", href: "/support/chat", ariaLabel: "Start live chat" }
+      { label: "Help Center", href: "/policy", ariaLabel: "Visit help center" },
+      { label: "Contact Us", href: "https://linkedin.com/in/Prince7z", ariaLabel: "Contact support" },
+      { label: "FAQ", href: "#FAQ", ariaLabel: "Frequently asked questions" },
+      { label: "Live Chat", href: "https://linkedin.com/in/Prince7z", ariaLabel: "Start live chat" }
     ]
   },
   {
@@ -90,9 +90,9 @@ const navItems: CardNavItem[] = [
     bgColor: "var(--bg-primary)",
     textColor: "var(--text-primary)",
     links: [
-      { label: "About Us", href: "/company/about", ariaLabel: "About BlackMail" },
-      { label: "Privacy Policy", href: "/company/privacy", ariaLabel: "Privacy policy" },
-      { label: "Terms of Service", href: "/company/terms", ariaLabel: "Terms of service" },
+      { label: "About Us", href: "/policy", ariaLabel: "About BlackMail" },
+      { label: "Privacy Policy", href: "/policy", ariaLabel: "Privacy policy" },
+      { label: "Terms of Service", href: "/policy", ariaLabel: "Terms of service" },
       { label: "Blog", href: "/blog", ariaLabel: "Visit our blog" }
     ]
   }
@@ -105,13 +105,19 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
-
-  const [isPremiumOpen, setIsPremiumOpen] = useState(false);
+  const [pass, setPass] = useState<string>('');
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loadingBlog, setLoadingBlog] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
+  const [id, setId] = useState<string>('');
+  const [token, setToken] = useState<string>('');
+  const[usermail,setUsermail]=useState<string>('');
+  const[contactMessage,setContactMessage]=useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  const [usersub,setUsersub]=useState<string>('');
 
   // Timer countdown
   useEffect(() => {
@@ -205,16 +211,35 @@ export default function Home() {
     showToastMessage('Copied to clipboard!');
   };
 
-  // Handle premium upgrade
-  const handleUpgrade = () => {
-    setIsPremiumOpen(false);
-    showToastMessage('Premium features coming soon!');
-  };
+ 
+const handleContactSubmit = async () => {
+  try {
+    const res = await axios.post('/api/contact', {
+      username: username,
+      usermail: usermail,
+      usersub: usersub,
+      contactMessage: contactMessage
+    });
+
+    if (res.status === 200) {
+      showToastMessage('Message sent successfully!');
+    }
+
+  } catch (error) {
+    showToastMessage('Failed to send message. Please try again.');
+  }
+};
+  
+
+ 
 
   // Show toast message
   const showToastMessage = (message: string) => {
     setToastMessage(message);
     setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
   };
 
   // Fetch blog posts
@@ -239,17 +264,41 @@ export default function Home() {
     fetchBlogPosts();
   }, []);
 
-  const buyEmail = () => {
+  
 
-    showToastMessage('Buying email feature coming soon!');
-  }
+  const buyEmail = async () => {
+    if (!email) {
+      showToastMessage('Please generate an email first!');
+      return;
+    }
+    
+    try {
+      const res = await axios.put('/api/temp', {
+        email: email,
+        action: 'buy'
+      });
+      
+      if (res.data.error) {
+        showToastMessage(res.data.error);
+      } else {
+        const data =res.data.ownResult;
+        setPass(data.password);
+        setId(data.id);
+        setToken(data.token);
+        showToastMessage('Permanent email activated - FREE!');
+        setIsBuyDialogOpen(true);
+      }
+    } catch (error) {
+      showToastMessage('Failed to get permanent email. Please try again.');
+    }
+  };
 
   return (
     <div className="app-container">
       {/* Navigation with integrated actions */}
       <div className="nav-wrapper">
         <CardNav
-          logo="/blackmail-logo.svg"
+          logo="/logo_Nav.png"
           logoAlt="BlackMail Logo"
           items={navItems}
           className="main-nav"
@@ -318,7 +367,7 @@ export default function Home() {
                       onClick={buyEmail}
                       className="buy-btn"
                     >
-                      Buy For $2
+                       Get Permanent Email 
                     </button>
                   </div>
                   
@@ -428,44 +477,35 @@ export default function Home() {
             {loadingBlog ? (
               <div className="blog-loading">Loading blog posts...</div>
             ) : blogPosts.length > 0 ? (
-              <div className="blog-container">
-                <CardSwap
-                  cardDistance={60}
-                  verticalDistance={70}
-                  delay={4000}
-                  pauseOnHover={true}
-                >
-                  {blogPosts.slice(0, 4).map((post) => (
-                    <Card key={post.id}>
-                      <a href={`/blog/${post.id}`} className="blog-card-small">
-                        {post.cover && (
-                          <div className="blog-cover-small">
-                            <img src={post.cover} alt={post.title} />
-                          </div>
-                        )}
-                        <div className="blog-content-small">
-                          <div className="blog-tags">
-                            {post.tags.slice(0, 2).map((tag, index) => (
-                              <span key={index} className="blog-tag">{tag}</span>
-                            ))}
-                          </div>
-                          <h3 className="blog-title">{post.title}</h3>
-                          <div className="blog-date">
-                            {new Date(post.date).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric'
-                            })}
-                          </div>
-                        </div>
-                      </a>
-                    </Card>
-                  ))}
-                </CardSwap>
+              <div className="blog-grid">
+                {blogPosts.slice(0, 6).map((post) => (
+                  <a key={post.id} href={`/blog/${post.id}`} className="blog-card-grid">
+                    {post.cover && (
+                      <div className="blog-cover-grid">
+                        <img src={post.cover} alt={post.title} />
+                      </div>
+                    )}
+                    <div className="blog-content-grid">
+                      <div className="blog-tags">
+                        {post.tags.slice(0, 2).map((tag, index) => (
+                          <span key={index} className="blog-tag">{tag}</span>
+                        ))}
+                      </div>
+                      <h3 className="blog-title">{post.title}</h3>
+                      <div className="blog-date">
+                        {new Date(post.date).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </div>
+                    </div>
+                  </a>
+                ))}
               </div>
             ) : (
               <div className="blog-empty">
                 <p>No blog posts available</p>
-              </div>
+              </div>    
             )}
           </div>
         </div>
@@ -478,26 +518,26 @@ export default function Home() {
               Have questions about BlackMail? Need support? We're here to help!
             </p>
             
-            <form className="contact-form">
+            <form className="contact-form" onSubmit={(e) => { e.preventDefault(); handleContactSubmit(); }}>
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="name">Name</label>
-                  <input type="text" id="name" name="name" required />
+                  <input type="text" onChange={(e) => setUsername(e.target.value)} id="name" name="name" required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="email">Email</label>
-                  <input type="email" id="email" name="email" required />
+                  <input type="email" onChange={(e) => setUsermail(e.target.value)} id="email" name="email" required />
                 </div>
               </div>
               
               <div className="form-group">
                 <label htmlFor="subject">Subject</label>
-                <input type="text" id="subject" name="subject" required />
+                <input type="text" onChange={(e) => setUsersub(e.target.value)} id="subject" name="subject" required />
               </div>
               
               <div className="form-group">
                 <label htmlFor="message">Message</label>
-                <textarea id="message" name="message" rows={5} required></textarea>
+                <textarea onChange={(e) => setContactMessage(e.target.value)} id="message" name="message" rows={5} required></textarea>
               </div>
               
               <button type="submit" className="contact-submit-btn">
@@ -507,8 +547,8 @@ export default function Home() {
             
             <div className="contact-info">
               <div className="contact-item">
-                <BlackMailLogo size={20} />
-                <span>support@blackmail.com</span>
+                <Icons.Mail />
+                <span>princesahu17125@gmail.com</span>
               </div>
               <div className="contact-item">
                 <Icons.MessageCircle />
@@ -523,7 +563,14 @@ export default function Home() {
       <footer className="footer">
         <div className="footer-content">
           <div className="footer-section">
-            <h4>TempusMail</h4>
+            <Image 
+              src="/logo.png" 
+              alt="BlackMail Logo" 
+              width={200} 
+              height={60}
+              className="footer-logo"
+              priority
+            />
             <p className="footer-description">
               Fast and secure disposable temporary email service. Protect your privacy and keep your inbox spam-free.
             </p>
@@ -532,33 +579,33 @@ export default function Home() {
           <div className="footer-section">
             <h4>Product</h4>
             <ul>
-              <li><a href="/links">Features</a></li>
-              <li><a href="/links">Pricing</a></li>
-              <li><a href="/links">API Documentation</a></li>
-              <li><a href="/links">FAQ</a></li>
+              <li><a href="/policy">Features</a></li>
+              <li><a href="/policy">Pricing</a></li>
+              <li><a href="/policy">API Documentation</a></li>
+              <li><a href="/policy">FAQ</a></li>
             </ul>
           </div>
           
           <div className="footer-section">
             <h4>Support</h4>
             <ul>
-              <li><a href="/links">Help Center</a></li>
-              <li><a href="/links">Contact Us</a></li>
-              <li><a href="/links">Terms of Service</a></li>
-              <li><a href="/links">Privacy Policy</a></li>
+              <li><a href="https://linkedin.com/in/princesahu7z" target="_blank" rel="noopener noreferrer">Help Center</a></li>
+              <li><a href="https://linkedin.com/in/princesahu7z" target="_blank" rel="noopener noreferrer">Contact Us</a></li>
+              <li><a href="/policy">Terms of Service</a></li>
+              <li><a href="/policy">Privacy Policy</a></li>
             </ul>
           </div>
           
           <div className="footer-section">
             <h4>Stay Connected</h4>
             <div className="social-links">
-              <a href="/links" aria-label="Twitter">
-                <Icons.Twitter />
+              <a href="https://x.com/PrinceSahu69495" aria-label="Twitter">
+                <Icons.X />
               </a>
-              <a href="/links" aria-label="GitHub">
+              <a href="https://github.com/Prince7z" aria-label="GitHub">
                 <Icons.GitHub />
               </a>
-              <a href="/links" aria-label="Discord">
+              <a href="https://linkedin.com/in/princesahu7z" aria-label="LinkedIn">
                 <Icons.MessageCircle />
               </a>
             </div>
@@ -566,48 +613,25 @@ export default function Home() {
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} TempusMail. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} BlackMail. All rights reserved.</p>
         </div>
       </footer>
-
-      {/* Message Dialog */}
-      <Dialog
-        isOpen={selectedMessage !== null}
-        onClose={() => setSelectedMessage(null)}
-        title={selectedMessage?.subject || ""}
-      >
-        {selectedMessage && (
-          <div className="message-dialog-content">
-            <div className="message-meta">
-              <div className="message-from">
-                <strong>From:</strong> {selectedMessage.from}
-              </div>
-              <div className="message-date">
-                <strong>Date:</strong> {selectedMessage.date}
-              </div>
-            </div>
-            <div className="message-body">
-              <div 
-                dangerouslySetInnerHTML={{ __html: selectedMessage.body }}
-              />
-            </div>
-          </div>
-        )}
-      </Dialog>
-
-      <Dialog
-        isOpen={isPremiumOpen}
-        onClose={() => setIsPremiumOpen(false)}
-        title="Upgrade to Premium"
-      >
-        <PremiumDialog onUpgrade={handleUpgrade} />
-      </Dialog>
 
       {/* Toast */}
       <Toast 
         message={toastMessage} 
         isVisible={showToast} 
         onClose={() => setShowToast(false)} 
+      />
+
+      {/* Buy Email Dialog */}
+      <BuyEmailDialog
+        isOpen={isBuyDialogOpen}
+        onClose={() => setIsBuyDialogOpen(false)}
+        email={email}
+        password={pass}
+        id={id}
+        token={token}
       />
     </div>
   );

@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import "./components/styles.css";
 import "./styles/blackmail-theme.css";
-import { ThemeProvider } from "./components/ThemeProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,12 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/tempusmail.svg" type="image/svg+xml" />
+        <link rel="icon" href="/logo.png" type="image/png" />
       </head>
       <body
         className={`${inter.className} antialiased`}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        {children}
       </body>
     </html>
   );

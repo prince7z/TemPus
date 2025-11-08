@@ -46,7 +46,7 @@ export default function BlogPage() {
       <header className="blog-header">
         <Link href="/" className="back-link">
           <Icons.Mail />
-          <span>TempusMail</span>
+          <span>BlackMail</span>
         </Link>
         <h1>Blog</h1>
         <p>Insights, guides, and updates about temporary email services</p>

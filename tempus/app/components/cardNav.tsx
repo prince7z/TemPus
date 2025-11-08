@@ -181,7 +181,7 @@ const CardNav: React.FC<CardNavProps> = ({
             className="card-nav-cta-button"
             style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
           >
-            Get Started
+            Theme Change
           </button>
         </div>
 

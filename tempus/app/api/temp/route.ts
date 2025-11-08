@@ -6,6 +6,23 @@ import { Accounts,Mails } from "../MDB/DB";
 const mail = new Mailjs();
 
 // Generate a temporary email
+export async function PUT(request: Request) {
+    try {
+        const { email, action } = await request.json();
+        if (action === 'buy') {
+            const ownResult = await Accounts.findOne({ email });
+            if (!ownResult) {
+                return NextResponse.json({ error: "Email not found" }, { status: 404 });
+            }
+            return NextResponse.json({ ownResult,success: true });
+        }
+
+    } catch (error) {
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
+}
+
+
 export async function GET() {
     try {
         // Create a new account

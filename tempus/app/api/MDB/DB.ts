@@ -26,7 +26,15 @@ const mailsSchema = new mongoose.Schema({
     date : { type: Date, default: Date.now }  
 });
 
+const contactSchema = new mongoose.Schema({
+    email: { type: String, required: true, unique: true },
+    name: { type: String },
+    message: { type: String, required: true },  
+    subject: { type: String },
+    createdAt: { type: Date, default: Date.now} 
+});
+const Contacts = mongoose.models.Contacts || mongoose.model("Contacts", contactSchema);
 const Accounts = mongoose.models.Accounts || mongoose.model("Accounts", accountsSchema);
 const Mails = mongoose.models.Mails || mongoose.model("Mails", mailsSchema);
 
-export { Accounts, Mails };
+export { Accounts, Mails, Contacts };
