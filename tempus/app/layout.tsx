@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "./components/styles.css";
+import "./styles/blackmail-theme.css";
 import { ThemeProvider } from "./components/ThemeProvider";
 
 const inter = Inter({
@@ -10,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "TempusMail : MailService",
-  description: "Fast and secure disposable temporary email service",
+  title: "BlackMail - Temporary Email Service",
+  description: "Fast and secure disposable temporary email service with black/white minimalist design",
 };
 
 export default function RootLayout({

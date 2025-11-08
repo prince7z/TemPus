@@ -66,6 +66,20 @@ export const Icons = {
       <path d="M3 10h18"/>
     </svg>
   ),
+  Timer: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="13" r="8"/>
+      <path d="M12 9v4"/>
+      <path d="M12 13l2.5 1.5"/>
+      <path d="M7 4h10"/>
+      <path d="M12 4v2"/>
+    </svg>
+  ),
+  MessageCircle: () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/>
+    </svg>
+  ),
 };
 
 // Default export component for using Icons with name prop

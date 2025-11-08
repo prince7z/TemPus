@@ -6,6 +6,11 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { Dialog } from './components/Dialog';
 import { PremiumDialog } from './components/PremiumDialog';
 import { Toast } from './components/Toast';
+import CardSwap, { Card } from './components/CardSwap';
+import CardNav, { CardNavItem } from './components/cardNav';
+import { BlackMailLogo } from './components/BlackMailLogo';
+import axios from 'axios';
+
 
 interface Email {
   id: string;
@@ -18,7 +23,7 @@ interface Message {
   from: string;
   subject: string;
   date: string;
-  content: string;
+  body: string;
 }
 
 interface BlogPost {
@@ -48,66 +53,101 @@ const faqs: FAQ[] = [
     answer: 'Yes, TempusMail is completely anonymous and secure. We don\'t collect any personal information and all emails are automatically deleted after expiration.'
   },
   {
-    question: 'When should I use TempusMail instead of my real email?',
-    answer: 'Use TempusMail when signing up for temporary services, downloading files, testing applications, or whenever you want to protect your real email from potential spam.'
+    question: 'How long do temporary emails last?',
+    answer: 'Temporary emails last for 60 minutes by default, but you can extend this time or delete them earlier if needed. Premium users get longer duration options.'
   },
   {
-    question: 'How long does an email stay in my TempusMail inbox?',
-    answer: 'Emails in your TempusMail inbox are available for 24 hours from the time of creation. After this period, both the email address and all messages are permanently deleted.'
+    question: 'Can I use TempusMail for important accounts?',
+    answer: 'We recommend using TempusMail only for temporary purposes like testing, verification, or avoiding spam. For important accounts, use a permanent email service.'
+  }
+];
+
+const navItems: CardNavItem[] = [
+  {
+    label: "Features",
+    bgColor: "var(--bg-primary)",
+    textColor: "var(--text-primary)",
+    links: [
+      { label: "Temporary Email", href: "/features/temp-email", ariaLabel: "Learn about temporary email" },
+      { label: "Auto Delete", href: "/features/auto-delete", ariaLabel: "Auto delete feature" },
+      { label: "Privacy Protection", href: "/features/privacy", ariaLabel: "Privacy protection" },
+      { label: "API Access", href: "/features/api", ariaLabel: "API access" }
+    ]
+  },
+  {
+    label: "Support",
+    bgColor: "var(--bg-primary)",
+    textColor: "var(--text-primary)", 
+    links: [
+      { label: "Help Center", href: "/support/help", ariaLabel: "Visit help center" },
+      { label: "Contact Us", href: "/support/contact", ariaLabel: "Contact support" },
+      { label: "FAQ", href: "/support/faq", ariaLabel: "Frequently asked questions" },
+      { label: "Live Chat", href: "/support/chat", ariaLabel: "Start live chat" }
+    ]
+  },
+  {
+    label: "Company",
+    bgColor: "var(--bg-primary)",
+    textColor: "var(--text-primary)",
+    links: [
+      { label: "About Us", href: "/company/about", ariaLabel: "About BlackMail" },
+      { label: "Privacy Policy", href: "/company/privacy", ariaLabel: "Privacy policy" },
+      { label: "Terms of Service", href: "/company/terms", ariaLabel: "Terms of service" },
+      { label: "Blog", href: "/blog", ariaLabel: "Visit our blog" }
+    ]
   }
 ];
 
 export default function Home() {
-  const [email, setEmail] = useState<Email | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [email, setEmail] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
-  const [expiryTime, setExpiryTime] = useState<string>('');
-  const [activeFaq, setActiveFaq] = useState<number | null>(null);
-  const [timeLeft, setTimeLeft] = useState<number>(600); // 10 minutes in seconds
-  const [isPremiumOpen, setIsPremiumOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
-  const [toastMessage, setToastMessage] = useState<string>('');
-  const [showToast, setShowToast] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+
+  const [isPremiumOpen, setIsPremiumOpen] = useState(false);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loadingBlog, setLoadingBlog] = useState(false);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
+  // Timer countdown
   useEffect(() => {
-    if (email && timeLeft > 0) {
+    if (timeLeft > 0 && email) {
       const timer = setInterval(() => {
-        setTimeLeft((prevTime) => {
-          if (prevTime <= 1) {
-            clearInterval(timer);
-            deleteEmail();
-            return 0;
-          }
-          return prevTime - 1;
-        });
+        setTimeLeft(prev => prev - 1);
       }, 1000);
-
       return () => clearInterval(timer);
+    } else if (timeLeft === 0 && email) {
+      deleteEmail();
     }
-  }, [email, timeLeft]);
+  }, [timeLeft, email]);
+
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   // Generate new email
   const generateEmail = async () => {
+    setLoading(true);
+    setError('');
+    
     try {
-      setLoading(true);
-      setError('');
       const response = await fetch('/api/temp');
       const data = await response.json();
       
       if (data.error) {
         throw new Error(data.error);
       }
-      
-      setEmail(data);
-      setMessages([]);
-      setTimeLeft(600); // Reset timer to 10 minutes
-      
-      // Set expiry time to 24 hours from now
-      const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
-      setExpiryTime(expiry.toLocaleTimeString());
+      localStorage.setItem('Token', data.token);
+      localStorage.setItem('id', data.id);
+      setEmail(data.email);
+      setTimeLeft(600); 
+      setMessages([]); 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate email');
     } finally {
@@ -115,68 +155,65 @@ export default function Home() {
     }
   };
 
-  // Copy email to clipboard
-  const copyEmail = () => {
-    if (email) {
-      navigator.clipboard.writeText(email.email);
-    }
-  };
-
   // Delete current email
-  const deleteEmail = () => {
-    setEmail(null);
+  const deleteEmail = async () => {
+    const res = await axios.delete('/api/temp', {
+      data: {
+        id: localStorage.getItem('id'),
+      }
+    });
+    setEmail('');
     setMessages([]);
-    setExpiryTime('');
+    setTimeLeft(600);
+    setSelectedMessage(null);
   };
 
-  // Fetch messages
-  const fetchMessages = async () => {
-    if (!email) return;
-
-    try {
-      setLoading(true);
-      setError('');
-      const response = await fetch('/api/temp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token: email.token,
-        }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      
-      setMessages(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch messages');
-    } finally {
-      setLoading(false);
+  // Extend email time
+  const extendTime = () => {
+    if (timeLeft < 1200) { // Max 20 minutes
+      setTimeLeft(prev => prev + 600); // Add 30 minutes
+      showToastMessage('Time extended by 10 minutes');
+    } else {
+      showToastMessage('Maximum time limit reached');
     }
   };
 
-  // Auto-refresh messages
-  useEffect(() => {
-    if (email) {
-      const interval = setInterval(fetchMessages, 10000);
-      return () => clearInterval(interval);
+  // Check for new messages
+  const checkMessages = useCallback(async () => {
+    if (!email) return;
+    
+    try {
+      const response = await axios.post(`/api/temp`, { token: localStorage.getItem('Token') });
+      const newMessages = await response.data;
+      setMessages(newMessages);
+    } catch (err) {
+      console.error('Failed to check messages:', err);
     }
   }, [email]);
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  // Check messages periodically
+  useEffect(() => {
+    if (email) {
+      const interval = setInterval(checkMessages, 5000); // Check every 5 seconds
+      return () => clearInterval(interval);
+    }
+  }, [email, checkMessages]);
+
+  // Copy to clipboard
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    showToastMessage('Copied to clipboard!');
   };
 
+  // Handle premium upgrade
   const handleUpgrade = () => {
     setIsPremiumOpen(false);
-    setToastMessage('Coming Soon!');
+    showToastMessage('Premium features coming soon!');
+  };
+
+  // Show toast message
+  const showToastMessage = (message: string) => {
+    setToastMessage(message);
     setShowToast(true);
   };
 
@@ -202,221 +239,336 @@ export default function Home() {
     fetchBlogPosts();
   }, []);
 
+  const buyEmail = () => {
+
+    showToastMessage('Buying email feature coming soon!');
+  }
+
   return (
-    <div>
-      <header className="header">
-        <div className="logo">
-          <Icons.Mail />
-          <span>TempusMail</span>
-        </div>
-        <div className="header-actions">
-          <ThemeToggle />
-          <button
-            className="premium-button"
-            onClick={() => setIsPremiumOpen(true)}
-            aria-haspopup="dialog"
-          >
-            Premium
-          </button>
-        </div>
-      </header>
+    <div className="app-container">
+      {/* Navigation with integrated actions */}
+      <div className="nav-wrapper">
+        <CardNav
+          logo="/blackmail-logo.svg"
+          logoAlt="BlackMail Logo"
+          items={navItems}
+          className="main-nav"
+          baseColor="var(--bg-primary)"
+          menuColor="var(--bg-primary)"
+          buttonBgColor="var(--text-primary)"
+          buttonTextColor="var(--bg-primary)"
+        />
+        
+    
+      </div>
 
-      <div className="container">
-        {/* Email Box */}
-        <div className="email-box">
-          <h2>Your Temporary Email Address</h2>
-          {email ? (
-            <>
-              <div className="email-address">
-                <span>{email.email}</span>
-                <button onClick={copyEmail} className="button button-secondary">
-                  <Icons.Copy />
-                </button>
-              </div>
-              <div className="expiry-info">
-                <span>Expires at: {expiryTime}</span>
-                <div className="timer">
-                  {formatTime(timeLeft)}
-                </div>
-              </div>
-              <div className="button-group">
-                <button onClick={fetchMessages} className="button button-secondary">
-                  <Icons.Refresh />
-                  <span>Refresh</span>
-                </button>
-                <button onClick={deleteEmail} className="button button-secondary">
-                  Delete
-                </button>
-                <button onClick={generateEmail} className="button button-secondary">
-                  Change
-                </button>
-              </div>
-            </>
-          ) : (
-            <button
-              onClick={generateEmail}
-              disabled={loading}
-              className="button button-primary"
-            >
-              {loading ? 'Generating...' : 'Generate New Email'}
-            </button>
-          )}
-          
-          {error && (
-            <p className="error">{error}</p>
-          )}
-        </div>
-
-        {/* Inbox */}
-        <div className="inbox">
-          <div className="inbox-header">
-            <h2>INBOX</h2>
-            {email && (
-              <button onClick={fetchMessages} className="button button-secondary">
-                Refresh
-              </button>
-            )}
-          </div>
-          
-          {messages.length > 0 ? (
-            <div className="messages">
-              {messages.map((message) => (
-                <div 
-                  key={message.id} 
-                  className="message" 
-                  onClick={() => setSelectedMessage(message)}
-                >
-                  <div className="message-header">
-                    <div className="message-sender">
-                      <div className="sender-avatar">
-                        <Icons.User />
-                      </div>
-                      <span className="sender">{message.from}</span>
+      {/* Main Content */}
+      <main className="main-content">
+        
+        {/* Email Generation Section */}
+        <section className="email-section">
+          <div className="email-card">
+            <h2>Your Temporary Email Address</h2>
+            
+            <div className="email-display-area">
+              {email ? (
+                <>
+                  <div className="email-input-wrapper">
+                    <input 
+                      type="text" 
+                      value={email} 
+                      readOnly 
+                      className="email-input" 
+                    />
+                    <div className="email-actions">
+                      <button
+                        onClick={() => copyToClipboard(email)}
+                        className="copy-btn"
+                      >
+                        <Icons.Copy />
+                      </button>
                     </div>
-                    <span className="date">{message.date}</span>
                   </div>
-                  <h3 className="subject">{message.subject}</h3>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-inbox">
-              <div className="empty-inbox-icon">
-                <Icons.Mail />
-              </div>
-              <p>Your inbox is empty</p>
-              <p>Waiting for incoming emails</p>
-            </div>
-          )}
-        </div>
-
-       
-        {/* FAQ Section */}
-        <div className="faq-section">
-          <h2>Frequently Asked Questions</h2>
-          {faqs.map((faq, index) => (
-            <div key={index} className={`faq-item ${activeFaq === index ? 'active' : ''}`}>
-              <button
-                className="faq-question"
-                onClick={() => setActiveFaq(activeFaq === index ? null : index)}
-              >
-                <span>{faq.question}</span>
-                <span>{activeFaq === index ? '▼' : '▶'}</span>
-              </button>
-              <p className="faq-answer">{faq.answer}</p>
-            </div>
-          ))}
-        </div>
-         {/* Blog Section */}
-        <div className="blog-section">
-          <h2>Latest from Our Blog</h2>
-          {loadingBlog ? (
-            <div className="blog-loading">Loading blog posts...</div>
-          ) : (
-            <div className="blog-grid" >
-              {blogPosts.slice(0, 6).map((post) => (
-                <a key={post.id} href={`/blog/${post.id}`} className="blog-card">
-                  {post.cover && (
-                    <div className="blog-cover">
-                      <img src={post.cover} alt={post.title} />
+                  
+                  <div className="timer-display">
+                    <Icons.Timer />
+                    <span>{formatTime(timeLeft)}</span>
+                  </div>
+                  
+                  <div className="action-buttons">
+                    <button
+                      onClick={generateEmail}
+                      className="change-btn"
+                    >
+                      Change
+                    </button>
+                    <button
+                      onClick={deleteEmail}
+                      className="delete-btn"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={extendTime}
+                      className="extend-btn"
+                    >
+                      Extend Time
+                    </button>
+                    <button
+                      onClick={buyEmail}
+                      className="buy-btn"
+                    >
+                      Buy For $2
+                    </button>
+                  </div>
+                  
+                  {loading && (
+                    <div className="loading-indicator">
+                      <span>Loading...</span>
                     </div>
                   )}
-                  <div className="blog-content">
-                    <div className="blog-tags">
-                      {post.tags.slice(0, 3).map((tag, index) => (
-                        <span key={index} className="blog-tag">{tag}</span>
-                      ))}
-                    </div>
-                    <h3 className="blog-title">{post.title}</h3>
-                    <div className="blog-date">
-                      {new Date(post.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </div>
-                  </div>
-                </a>
-              ))}
+                </>
+              ) : (
+                <button
+                  onClick={generateEmail}
+                  disabled={loading}
+                  className="generate-btn"
+                >
+                  {loading ? 'Generating...' : 'Generate New Email'}
+                </button>
+              )}
+              
+              {error && <p className="error-message">{error}</p>}
             </div>
-          )}
+          </div>
+        </section>
+
+        {/* Inbox Section */}
+        <section className="inbox-section">
+        {/* Add a line decreasing for 5 sec and get restart when clicked on refresh icon */}
+          <div className="refresh-progress">
+            <div 
+              className="refresh-progress-bar" 
+              style={{ 
+          animation: 'shrink 5s linear infinite',
+          width: '95%',
+          height: '3px',
+          marginLeft: '20px',
+          backgroundColor: 'var(--text-primary)',
+          transformOrigin: 'left'
+              }} 
+            />
+          </div>
+          <div className="inbox-card ">
+            <div className="inbox-header" style={{ display : "flex"}}>
+            <h3 className="inbox-title">Recent Mails</h3>
+            <div className="refresh-button">
+              <a onClick={checkMessages} style={{ cursor: "pointer", color: 'black' }} aria-label="Refresh messages">
+                <Icons.Refresh />
+              </a>
+            </div>
+            </div>
+            <div className="inbox-list">
+              {messages.length > 0 ? (
+                <div className="messages">
+                  {messages.map((message) => (
+                    <div 
+                      key={message.id} 
+                      className="message" 
+                      onClick={() => setSelectedMessage(message)}
+                    >
+                      <div className="message-header">
+                        <div className="message-sender">
+                          <div className="sender-avatar">
+                            <Icons.User />
+                          </div>
+                          <span className="sender">{message.from}</span>
+                        </div>
+                        <span className="date">{message.date}</span>
+                      </div>
+                      <h3 className="subject">{message.subject}</h3>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-inbox">
+                  <div className="empty-inbox-icon">
+                    <Icons.Mail />
+                  </div>
+                  <p>Your inbox is empty</p>
+                  <p>Waiting for incoming emails</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Two Column Section: FAQ and Blog */}
+        <div className="two-column-section">
+          {/* FAQ Section */}
+          <div className="faq-column">
+            <h2>Frequently Asked Questions</h2>
+            {faqs.map((faq, index) => (
+              <div key={index} className={`faq-item ${activeFaq === index ? 'active' : ''}`}>
+                <button
+                  className="faq-question"
+                  onClick={() => setActiveFaq(activeFaq === index ? null : index)}
+                >
+                  <span>{faq.question}</span>
+                  <span>{activeFaq === index ? '▼' : '▶'}</span>
+                </button>
+                <p className="faq-answer">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Blog Section */}
+          <div className="blog-column">
+            <h2>Latest Blog Posts</h2>
+            {loadingBlog ? (
+              <div className="blog-loading">Loading blog posts...</div>
+            ) : blogPosts.length > 0 ? (
+              <div className="blog-container">
+                <CardSwap
+                  cardDistance={60}
+                  verticalDistance={70}
+                  delay={4000}
+                  pauseOnHover={true}
+                >
+                  {blogPosts.slice(0, 4).map((post) => (
+                    <Card key={post.id}>
+                      <a href={`/blog/${post.id}`} className="blog-card-small">
+                        {post.cover && (
+                          <div className="blog-cover-small">
+                            <img src={post.cover} alt={post.title} />
+                          </div>
+                        )}
+                        <div className="blog-content-small">
+                          <div className="blog-tags">
+                            {post.tags.slice(0, 2).map((tag, index) => (
+                              <span key={index} className="blog-tag">{tag}</span>
+                            ))}
+                          </div>
+                          <h3 className="blog-title">{post.title}</h3>
+                          <div className="blog-date">
+                            {new Date(post.date).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </div>
+                        </div>
+                      </a>
+                    </Card>
+                  ))}
+                </CardSwap>
+              </div>
+            ) : (
+              <div className="blog-empty">
+                <p>No blog posts available</p>
+              </div>
+            )}
+          </div>
         </div>
 
-
-        {/* Footer */}
-        <footer className="footer">
-          <div className="footer-content">
-            <div className="footer-section">
-              <h4>TempusMail</h4>
-              <p className="footer-description">
-                Fast and secure disposable temporary email service. Protect your privacy and keep your inbox spam-free.
-              </p>
-            </div>
+        {/* Contact Section */}
+        <section className="contact-section">
+          <div className="contact-card">
+            <h2>Get in Touch</h2>
+            <p className="contact-description">
+              Have questions about BlackMail? Need support? We're here to help!
+            </p>
             
-            <div className="footer-section">
-              <h4>Product</h4>
-              <ul>
-                <li><a href="/links">Features</a></li>
-                <li><a href="/links">Pricing</a></li>
-                <li><a href="/links">API Documentation</a></li>
-                <li><a href="/links">FAQ</a></li>
-              </ul>
-            </div>
+            <form className="contact-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="name">Name</label>
+                  <input type="text" id="name" name="name" required />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="email">Email</label>
+                  <input type="email" id="email" name="email" required />
+                </div>
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="subject">Subject</label>
+                <input type="text" id="subject" name="subject" required />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="message">Message</label>
+                <textarea id="message" name="message" rows={5} required></textarea>
+              </div>
+              
+              <button type="submit" className="contact-submit-btn">
+                Send Message
+              </button>
+            </form>
             
-            <div className="footer-section">
-              <h4>Company</h4>
-              <ul>
-                <li><a href="/links">About Us</a></li>
-                <li><a href="/links">Blog</a></li>
-                <li><a href="/links">Careers</a></li>
-                <li><a href="/links">Contact</a></li>
-              </ul>
-            </div>
-            
-            <div className="footer-section">
-              <h4>Legal</h4>
-              <ul>
-                <li><a href="/links">Privacy Policy</a></li>
-                <li><a href="/links">Terms of Service</a></li>
-                <li><a href="/links">Cookie Policy</a></li>
-              </ul>
+            <div className="contact-info">
+              <div className="contact-item">
+                <BlackMailLogo size={20} />
+                <span>support@blackmail.com</span>
+              </div>
+              <div className="contact-item">
+                <Icons.MessageCircle />
+                <span>Live Chat Available 24/7</span>
+              </div>
             </div>
           </div>
+        </section>
+      </main>
 
-          <div className="social-links">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-              <Icons.GitHub />
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-              <Icons.Twitter />
-            </a>
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-section">
+            <h4>TempusMail</h4>
+            <p className="footer-description">
+              Fast and secure disposable temporary email service. Protect your privacy and keep your inbox spam-free.
+            </p>
           </div>
+          
+          <div className="footer-section">
+            <h4>Product</h4>
+            <ul>
+              <li><a href="/links">Features</a></li>
+              <li><a href="/links">Pricing</a></li>
+              <li><a href="/links">API Documentation</a></li>
+              <li><a href="/links">FAQ</a></li>
+            </ul>
+          </div>
+          
+          <div className="footer-section">
+            <h4>Support</h4>
+            <ul>
+              <li><a href="/links">Help Center</a></li>
+              <li><a href="/links">Contact Us</a></li>
+              <li><a href="/links">Terms of Service</a></li>
+              <li><a href="/links">Privacy Policy</a></li>
+            </ul>
+          </div>
+          
+          <div className="footer-section">
+            <h4>Stay Connected</h4>
+            <div className="social-links">
+              <a href="/links" aria-label="Twitter">
+                <Icons.Twitter />
+              </a>
+              <a href="/links" aria-label="GitHub">
+                <Icons.GitHub />
+              </a>
+              <a href="/links" aria-label="Discord">
+                <Icons.MessageCircle />
+              </a>
+            </div>
+          </div>
+        </div>
 
-          <div className="footer-bottom">
-            <p>&copy; {new Date().getFullYear()} TempusMail. All rights reserved.</p>
-          </div>
-        </footer>
-      </div>
+        <div className="footer-bottom">
+          <p>&copy; {new Date().getFullYear()} TempusMail. All rights reserved.</p>
+        </div>
+      </footer>
 
       {/* Message Dialog */}
       <Dialog
@@ -425,24 +577,24 @@ export default function Home() {
         title={selectedMessage?.subject || ""}
       >
         {selectedMessage && (
-          <div className="message-full">
-            <div className="message-sender">
-              <div className="sender-avatar">
-                <Icons.User />
+          <div className="message-dialog-content">
+            <div className="message-meta">
+              <div className="message-from">
+                <strong>From:</strong> {selectedMessage.from}
               </div>
-              <div>
-                <div className="sender">{selectedMessage.from}</div>
-                <div className="date">{selectedMessage.date}</div>
+              <div className="message-date">
+                <strong>Date:</strong> {selectedMessage.date}
               </div>
             </div>
-            <div className="message-content">
-              {selectedMessage.content}
+            <div className="message-body">
+              <div 
+                dangerouslySetInnerHTML={{ __html: selectedMessage.body }}
+              />
             </div>
           </div>
         )}
       </Dialog>
 
-      {/* Premium Dialog */}
       <Dialog
         isOpen={isPremiumOpen}
         onClose={() => setIsPremiumOpen(false)}
