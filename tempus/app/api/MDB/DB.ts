@@ -12,6 +12,7 @@ mongoose.connect(DB_URI,
 const accountsSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    forIP: { type: String, required: true },
     token: { type: String, required: true },
     id: { type: String, required: true, unique: true },
     createdAt: { type: Date, default: Date.now} ,

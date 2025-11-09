@@ -23,7 +23,7 @@ export async function PUT(request: Request) {
 }
 
 
-export async function GET() {
+export async function GET( request: Request) {
     try {
         // Create a new account
         const account = await mail.createOneAccount();
@@ -41,7 +41,8 @@ export async function GET() {
             email: account.data.username,
             password: account.data.password,
             token: loginResult.data.token,
-            id: loginResult.data.id
+            id: loginResult.data.id,
+            forIP: request.headers.get('x-forwarded-for') || 'unknown'
         });
        
         await acc.save();
