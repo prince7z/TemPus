@@ -3,6 +3,8 @@ import { gsap } from 'gsap';
 // use your own icon import if react-icons is not available
 import { GoArrowUpRight } from 'react-icons/go';
 import './CardNav.css';
+import { useEffect } from 'react';
+import Icon from './Icons';
 
 type CardNavLink = {
   label: string;
@@ -45,6 +47,7 @@ const CardNav: React.FC<CardNavProps> = ({
   const navRef = useRef<HTMLDivElement | null>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
+   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   const calculateHeight = () => {
     const navEl = navRef.current;
@@ -155,6 +158,25 @@ const CardNav: React.FC<CardNavProps> = ({
   const setCardRef = (i: number) => (el: HTMLDivElement | null) => {
     if (el) cardsRef.current[i] = el;
   };
+    useEffect(() => {
+      const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+      if (savedTheme) {
+        setTheme(savedTheme);
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } else {
+        // Default to light theme
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    }, []);
+  
+    // Toggle theme function
+    const toggleTheme = () => {
+      const newTheme = theme === 'light' ? 'dark' : 'light';
+      setTheme(newTheme);
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    };
+  
 
   return (
     <div className={`card-nav-container ${className}`}>
@@ -176,13 +198,19 @@ const CardNav: React.FC<CardNavProps> = ({
             <img src={logo} alt={logoAlt} className="logo" />
           </div>
 
-          <button
-            type="button"
-            className="card-nav-cta-button"
-            style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
-          >
-            Theme Change
-          </button>
+         
+            
+          
+              <button
+              type="button"
+              className="card-nav-cta-button"
+              onClick={toggleTheme}
+              style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
+              aria-label="Toggle theme"
+            >
+              <Icon name={theme === 'light' ? 'Sun' : 'Moon'} />
+            </button>
+          
         </div>
 
         <div className="card-nav-content" aria-hidden={!isExpanded}>

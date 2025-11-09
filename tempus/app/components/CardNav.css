@@ -81,15 +81,15 @@
 }
 
 .logo {
-  height: 28px;
+  height: 49px;
 }
 
 .card-nav-cta-button {
   background-color: #111;
   color: white;
   border: none;
-  border-radius: calc(0.75rem - 0.35rem);
-  padding: 0.6rem 1.2rem;
+  border-radius: calc(0.5rem - 0.35rem);
+  padding: 0.3rem 1rem;
   height: auto;
   font-size: 14px;
   font-weight: 500;
@@ -173,20 +173,31 @@
   .card-nav-top {
     padding: 0.5rem 1rem;
     justify-content: space-between;
-  }
-
-  .hamburger-menu {
-    order: 2;
+    display: flex;
+    align-items: center;
   }
 
   .logo-container {
     position: static;
     transform: none;
     order: 1;
+    flex-shrink: 0;
+  }
+  .hamburger-line {
+    gap: 4px;
   }
 
   .card-nav-cta-button {
-    display: none;
+    padding: 0.15rem .9rem;
+    order: 2;
+    flex-shrink: 0;
+    margin-left: auto;
+    margin-right: 0.5rem;
+  }
+
+  .hamburger-menu {
+    order: 3;
+    flex-shrink: 0;
   }
 
   .card-nav-content {

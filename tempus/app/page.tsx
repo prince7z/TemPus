@@ -24,6 +24,7 @@ interface Message {
   subject: string;
   date: string;
   body: string;
+  content: string;
 }
 
 interface BlogPost {
@@ -98,6 +99,7 @@ const navItems: CardNavItem[] = [
   }
 ];
 
+
 export default function Home() {
   const [email, setEmail] = useState<string>('');
   const [loading, setLoading] = useState(false);
@@ -118,6 +120,8 @@ export default function Home() {
   const[contactMessage,setContactMessage]=useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [usersub,setUsersub]=useState<string>('');
+
+  // Load theme from localStorage on mount
 
   // Timer countdown
   useEffect(() => {
@@ -308,6 +312,7 @@ const handleContactSubmit = async () => {
           buttonTextColor="var(--bg-primary)"
         />
         
+      
     
       </div>
 
@@ -451,6 +456,53 @@ const handleContactSubmit = async () => {
             </div>
           </div>
         </section>
+
+        {/* Message Detail Modal */}
+        {selectedMessage && (
+          <div className="message-modal-overlay" onClick={() => setSelectedMessage(null)}>
+            <div className="message-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="message-modal-header">
+                <button className="back-btn" onClick={() => setSelectedMessage(null)}>
+                  ← BACK TO LIST
+                </button>
+                <div className="message-modal-actions">
+                  <button className="message-action-btn" onClick={() => setSelectedMessage(null)}>
+                    Delete
+                  </button>
+                  <button className="message-action-btn">
+                    Source
+                  </button>
+                </div>
+              </div>
+              
+              <div className="message-modal-content">
+                <div className="message-sender-info">
+                  <div className="sender-avatar-large">
+                    <Icons.User />
+                  </div>
+                  <div className="sender-details">
+                    <div className="sender-email">{selectedMessage.from}</div>
+                    <div className="message-date-full">
+                      Date: {selectedMessage.date}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="message-subject-full">
+                  <strong>Subject:</strong> {selectedMessage.subject}
+                </div>
+                
+                
+                <div className="message-content">
+                                  <div className="message-subject-full">
+                  <strong>Body:</strong> <div className="message-body" dangerouslySetInnerHTML={{ __html: selectedMessage.body }}>
+                </div>
+                </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Two Column Section: FAQ and Blog */}
         <div className="two-column-section">

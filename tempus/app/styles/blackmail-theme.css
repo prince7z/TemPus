@@ -52,10 +52,36 @@ body {
   z-index: 1000;
   background-color: var(--bg-primary);
   border-bottom: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 2rem;
 }
 
 .main-nav {
   position: relative;
+  flex: 1;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  border: 2px solid var(--text-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
 }
 
 /* Integrated Navigation Actions */
@@ -429,6 +455,159 @@ body {
   height: 3rem;
   margin-bottom: 1rem;
   opacity: 0.5;
+}
+
+/* Message Detail Modal */
+.message-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+}
+
+.message-modal {
+  background-color: var(--bg-primary);
+  border: 2px solid var(--border);
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.message-modal-header {
+  background-color: var(--bg-secondary);
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--accent);
+}
+
+.message-modal-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.message-action-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.message-action-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--accent);
+}
+
+.message-modal-content {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.message-sender-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sender-avatar-large {
+  width: 3rem;
+  height: 3rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.sender-details {
+  flex: 1;
+}
+
+.sender-email {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.message-date-full {
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+}
+
+.message-subject-full {
+  background-color: var(--bg-secondary);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+}
+
+.message-subject-full strong {
+  color: var(--text-secondary);
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.message-body {
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 1rem;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.message-body a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.message-body a:hover {
+  color: var(--text-primary);
 }
 
 /* Two Column Layout */
@@ -1291,6 +1470,21 @@ body {
     right: 1rem;
     left: 1rem;
     max-width: none;
+  }
+  
+  /* Message modal responsive */
+  .message-modal {
+    max-width: 95%;
+  }
+  
+  .message-modal-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  
+  .message-modal-content {
+    padding: 1rem;
   }
 }
 

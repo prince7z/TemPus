@@ -92,19 +92,72 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
         }
 
-        console.log(messages);
+        // Fetch full message content for each message
+        const messagesWithFullContent = await Promise.all(
+            messages.data.map(async (msg) => {
+                try {
+                    const fullMessage = await mail.getMessage(msg.id);
+                    // Prefer HTML content, fallback to text, then intro
+                    let body = msg.intro || 'No content';
+                    if (fullMessage.status && fullMessage.data) {
+                        if (fullMessage.data.html && fullMessage.data.html.length > 0) {
+                            body = fullMessage.data.html[0]; // HTML content with formatting and buttons
+                        } else if (fullMessage.data.text) {
+                            body = fullMessage.data.text; // Plain text content
+                        }
+                    }
+                    
+                    return {
+                        id: msg.id,
+                        avatar: msg.from?.address ? `https://ui-avatars.com/api/?name=${encodeURIComponent(msg.from.address)}` : undefined,
+                        from: msg.from?.address || 'Unknown',
+                        subject: msg.subject || 'No Subject',
+                        date: new Date(msg.createdAt || Date.now()).toLocaleString(),
+                        body: body
+                    };
+                } catch (error) {
+                    // If fetching full message fails, fallback to intro
+                    return {
+                        id: msg.id,
+                        avatar: msg.from?.address ? `https://ui-avatars.com/api/?name=${encodeURIComponent(msg.from.address)}` : undefined,
+                        from: msg.from?.address || 'Unknown',
+                        subject: msg.subject || 'No Subject',
+                        date: new Date(msg.createdAt || Date.now()).toLocaleString(),
+                        body: msg.intro || 'No content'
+                    };
+                }
+            })
+        );
+
+        
         const dblist=await Mails.find({to:authResult.data.id});
         const acc=await Accounts.findOne({id:authResult.data.id});
         const msglist=messages.data;
         if (dblist.length<msglist.length){
             const newmsgs=msglist.slice(0,msglist.length-dblist.length);
             for (const msg of newmsgs){
+                // Fetch full message for database storage
+                let fullBody = msg.intro || 'No content';
+                try {
+                    const fullMessage = await mail.getMessage(msg.id);
+                    if (fullMessage.status && fullMessage.data) {
+                        // Prefer HTML content for rich formatting
+                        if (fullMessage.data.html && fullMessage.data.html.length > 0) {
+                            fullBody = fullMessage.data.html[0];
+                        } else if (fullMessage.data.text) {
+                            fullBody = fullMessage.data.text;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch full message for storage:', error);
+                }
+                
                 const newmail=new Mails({
                     msgid:msg.id,
                     from:msg.from?.address || 'Unknown',
                     to:acc?._id || null,
                     subject:msg.subject ||'No Subject',
-                    body:msg.intro || 'No content',
+                    body: fullBody,
                     date: msg.createdAt || Date.now()
                 });
                 await newmail.save();
@@ -115,14 +168,7 @@ export async function POST(request: Request) {
             }
         }
       
-        return NextResponse.json(messages.data?.map(msg => ({
-            id: msg.id,
-            avatar: msg.from?.address ? `https://ui-avatars.com/api/?name=${encodeURIComponent(msg.from.address)}` : undefined,
-            from: msg.from?.address || 'Unknown',
-            subject: msg.subject || 'No Subject',
-            date: new Date(msg.createdAt || Date.now()).toLocaleString(),
-            content: msg.intro || 'No content'
-        })) || []);
+        return NextResponse.json(messagesWithFullContent);
     } catch (error) {
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
