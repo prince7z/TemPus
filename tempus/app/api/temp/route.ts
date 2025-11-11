@@ -12,13 +12,16 @@ export async function PUT(request: Request) {
         if (action === 'buy') {
             const ownResult = await Accounts.findOne({ email });
             if (!ownResult) {
+                console.error('PUT /api/temp: Email not found for', email);
                 return NextResponse.json({ error: "Email not found" }, { status: 404 });
             }
             return NextResponse.json({ ownResult,success: true });
         }
 
     } catch (error) {
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        console.error('PUT /api/temp error:', error);
+        const body = process.env.NODE_ENV !== 'production' ? { error: (error as any)?.message || String(error) } : { error: "Internal server error" };
+        return NextResponse.json(body, { status: 500 });
     }
 }
 
@@ -28,7 +31,9 @@ export async function GET( request: Request) {
         // Create a new account
         const account = await mail.createOneAccount();
         if (!account.status) {
-            return NextResponse.json({ error: "Failed to create email account" }, { status: 500 });
+            console.error('GET /api/temp: createOneAccount failed', account);
+            const body = process.env.NODE_ENV !== 'production' ? { error: account } : { error: "Failed to create email account" };
+            return NextResponse.json(body, { status: 500 });
         }
 
         // Login to get the auth token
@@ -52,7 +57,9 @@ export async function GET( request: Request) {
             email: account.data.username
         });
     } catch (error) {
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        console.error('GET /api/temp error:', error);
+        const body = process.env.NODE_ENV !== 'production' ? { error: (error as any)?.message || String(error) } : { error: "Internal server error" };
+        return NextResponse.json(body, { status: 500 });
     }
 }
 
@@ -64,11 +71,15 @@ export async function DELETE(request: Request) {
         }
         const deleteResult:any = await mail.deleteAccount(id);
         if (!deleteResult.status) {
-            return NextResponse.json({ error: "Failed to delete email account" }, { status: 500 });
+            console.error('DELETE /api/temp: deleteAccount failed', deleteResult);
+            const body = process.env.NODE_ENV !== 'production' ? { error: deleteResult } : { error: "Failed to delete email account" };
+            return NextResponse.json(body, { status: 500 });
         }
         return NextResponse.json({ success: true });
     } catch (error) {
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        console.error('DELETE /api/temp error:', error);
+        const body = process.env.NODE_ENV !== 'production' ? { error: (error as any)?.message || String(error) } : { error: "Internal server error" };
+        return NextResponse.json(body, { status: 500 });
     }
 }
 
@@ -84,13 +95,17 @@ export async function POST(request: Request) {
         // Login with the token to get messages
         const authResult = await mail.loginWithToken(token);
         if (!authResult.status) {
-            return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 });
+            console.error('POST /api/temp: loginWithToken failed', authResult);
+            const body = process.env.NODE_ENV !== 'production' ? { error: authResult } : { error: "Invalid or expired token" };
+            return NextResponse.json(body, { status: 401 });
         }
 
         // Get messages
         const messages = await mail.getMessages();
         if (!messages.status) {
-            return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
+            console.error('POST /api/temp: getMessages failed', messages);
+            const body = process.env.NODE_ENV !== 'production' ? { error: messages } : { error: "Failed to fetch messages" };
+            return NextResponse.json(body, { status: 500 });
         }
 
         // Fetch full message content for each message

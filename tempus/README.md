@@ -1,12 +1,12 @@
-# TempusMail
+# BlackMail
 
 > A fast and secure disposable temporary email service built with Next.js
 
-**[Live Demo →](YOUR_DEPLOYED_URL_HERE)**
+**[Live Demo →](https://tempus-zvh5.onrender.com)**
 
 ## Overview
 
-TempusMail is a privacy-focused temporary email service that generates disposable email addresses instantly—no sign-up required. Perfect for website registrations, online verifications, or testing services while keeping your real inbox safe from spam and unwanted messages.
+BlackMail is a privacy-focused temporary email service that generates disposable email addresses instantly—no sign-up required. Perfect for website registrations, online verifications, or testing services while keeping your real inbox safe from spam and unwanted messages.
 
 ### Key Features
 

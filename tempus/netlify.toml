@@ -1,0 +1,25 @@
+# Netlify configuration for Next.js (App Router + API routes)
+# Uses the official Netlify Next.js plugin to build and expose Next.js pages and API routes.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Set build-time environment variables here if needed. Don't put secrets in this file;
+# add them in the Netlify UI or CLI instead.
+[build.environment]
+  NODE_VERSION = "18"
+
+# Enable the Netlify Next.js plugin
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Optional: if you prefer to route /api/* to a manual Netlify Function, uncomment the
+# redirects block below and create functions under netlify/functions/. This is
+# generally unnecessary when using the plugin which handles Next API routes.
+
+# [[redirects]]
+#   from = "/api/*"
+#   to = "/.netlify/functions/:splat"
+#   status = 200
+#   force = false
