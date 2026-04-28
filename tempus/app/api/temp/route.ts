@@ -5,6 +5,16 @@ import { Accounts,Mails } from "../MDB/DB";
 
 const mail = new Mailjs();
 
+// Helper function to add timeout to promises
+const withTimeout = <T,>(promise: Promise<T>, timeoutMs: number = 30000): Promise<T> => {
+    return Promise.race([
+        promise,
+        new Promise<T>((_, reject) =>
+            setTimeout(() => reject(new Error(`Timeout: Operation exceeded ${timeoutMs}ms`)), timeoutMs)
+        )
+    ]);
+};
+
 // Generate a temporary email
 export async function PUT(request: Request) {
     try {
@@ -20,27 +30,35 @@ export async function PUT(request: Request) {
 
     } catch (error) {
         console.error('PUT /api/temp error:', error);
-        const body = process.env.NODE_ENV !== 'production' ? { error: (error as any)?.message || String(error) } : { error: "Internal server error" };
-        return NextResponse.json(body, { status: 500 });
+        return NextResponse.json({ 
+            error: "Internal server error",
+            message: (error as any)?.message || String(error)
+        }, { status: 500 });
     }
 }
 
 
 export async function GET( request: Request) {
     try {
-        // Create a new account
-        const account = await mail.createOneAccount();
+        // Create a new account with timeout
+        const account = await withTimeout(mail.createOneAccount(), 30000);
         if (!account.status) {
-            console.error('GET /api/temp: createOneAccount failed', account);
-            const body = process.env.NODE_ENV !== 'production' ? { error: account } : { error: "Failed to create email account" };
-            return NextResponse.json(body, { status: 500 });
+            console.error('GET /api/temp: createOneAccount failed', JSON.stringify(account));
+            return NextResponse.json({ 
+                error: "Failed to create email account",
+                details: account.message || account
+            }, { status: 500 });
         }
 
-        // Login to get the auth token
-        const loginResult = await mail.login(account.data.username, account.data.password);
+        // Login to get the auth token with timeout
+        const loginResult = await withTimeout(mail.login(account.data.username, account.data.password), 15000);
   
         if (!loginResult.status) {
-            return NextResponse.json({ error: "Failed to login to email account" }, { status: 500 });
+            console.error('GET /api/temp: login failed', JSON.stringify(loginResult));
+            return NextResponse.json({ 
+                error: "Failed to login to email account",
+                details: loginResult.message || loginResult
+            }, { status: 500 });
         }
         const acc =new Accounts({
             email: account.data.username,
@@ -58,8 +76,10 @@ export async function GET( request: Request) {
         });
     } catch (error) {
         console.error('GET /api/temp error:', error);
-        const body = process.env.NODE_ENV !== 'production' ? { error: (error as any)?.message || String(error) } : { error: "Internal server error" };
-        return NextResponse.json(body, { status: 500 });
+        return NextResponse.json({ 
+            error: "Internal server error",
+            message: (error as any)?.message || String(error)
+        }, { status: 500 });
     }
 }
 
@@ -69,17 +89,21 @@ export async function DELETE(request: Request) {
         if (!id) {
             return NextResponse.json({ error: "Missing email ID" }, { status: 400 });
         }
-        const deleteResult:any = await mail.deleteAccount(id);
+        const deleteResult:any = await withTimeout(mail.deleteAccount(id), 15000);
         if (!deleteResult.status) {
-            console.error('DELETE /api/temp: deleteAccount failed', deleteResult);
-            const body = process.env.NODE_ENV !== 'production' ? { error: deleteResult } : { error: "Failed to delete email account" };
-            return NextResponse.json(body, { status: 500 });
+            console.error('DELETE /api/temp: deleteAccount failed', JSON.stringify(deleteResult));
+            return NextResponse.json({ 
+                error: "Failed to delete email account",
+                details: deleteResult.message || deleteResult
+            }, { status: 500 });
         }
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('DELETE /api/temp error:', error);
-        const body = process.env.NODE_ENV !== 'production' ? { error: (error as any)?.message || String(error) } : { error: "Internal server error" };
-        return NextResponse.json(body, { status: 500 });
+        return NextResponse.json({ 
+            error: "Internal server error",
+            message: (error as any)?.message || String(error)
+        }, { status: 500 });
     }
 }
 
@@ -93,19 +117,23 @@ export async function POST(request: Request) {
         }
 
         // Login with the token to get messages
-        const authResult = await mail.loginWithToken(token);
+        const authResult = await withTimeout(mail.loginWithToken(token), 15000);
         if (!authResult.status) {
-            console.error('POST /api/temp: loginWithToken failed', authResult);
-            const body = process.env.NODE_ENV !== 'production' ? { error: authResult } : { error: "Invalid or expired token" };
-            return NextResponse.json(body, { status: 401 });
+            console.error('POST /api/temp: loginWithToken failed', JSON.stringify(authResult));
+            return NextResponse.json({ 
+                error: "Invalid or expired token",
+                details: authResult.message || authResult
+            }, { status: 401 });
         }
 
-        // Get messages
-        const messages = await mail.getMessages();
+        // Get messages with timeout
+        const messages = await withTimeout(mail.getMessages(), 15000);
         if (!messages.status) {
-            console.error('POST /api/temp: getMessages failed', messages);
-            const body = process.env.NODE_ENV !== 'production' ? { error: messages } : { error: "Failed to fetch messages" };
-            return NextResponse.json(body, { status: 500 });
+            console.error('POST /api/temp: getMessages failed', JSON.stringify(messages));
+            return NextResponse.json({ 
+                error: "Failed to fetch messages",
+                details: messages.message || messages
+            }, { status: 500 });
         }
 
         // Fetch full message content for each message
@@ -186,6 +214,10 @@ export async function POST(request: Request) {
       
         return NextResponse.json(messagesWithFullContent);
     } catch (error) {
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+        console.error('POST /api/temp error:', error);
+        return NextResponse.json({ 
+            error: "Internal server error",
+            message: (error as any)?.message || String(error)
+        }, { status: 500 });
     }
 }
