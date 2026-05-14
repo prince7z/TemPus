@@ -5,6 +5,84 @@ import { Accounts,Mails } from "../MDB/DB";
 
 const mail = new Mailjs();
 
+const TRANSIENT_STATUS_CODES = new Set([429, 500, 502, 503, 504]);
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const randomHex = (length: number) => {
+    const bytes = new Uint8Array(Math.ceil(length / 2));
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('').slice(0, length);
+};
+
+const createAccountWithFallback = async () => {
+    // First try helper path from the SDK.
+    const helperAccount = await withTimeout(mail.createOneAccount(), 30000);
+    if (helperAccount?.status) {
+        return {
+            account: helperAccount,
+            loginResult: await withTimeout(mail.login(helperAccount.data.username, helperAccount.data.password), 15000)
+        };
+    }
+
+    // If helper path fails (often transient in shared serverless egress), fallback to explicit flow with retries.
+    const domainResult = await withTimeout(mail.getDomains(), 15000);
+    if (!domainResult.status || !Array.isArray(domainResult.data) || domainResult.data.length === 0) {
+        return {
+            account: helperAccount,
+            loginResult: { status: false, message: 'Failed to fetch available domains', statusCode: domainResult?.statusCode || 500, data: '' }
+        };
+    }
+
+    const preferredDomain = process.env.MAILTM_DOMAIN;
+    const chosenDomain = preferredDomain && domainResult.data.some((d: any) => d?.domain === preferredDomain)
+        ? preferredDomain
+        : domainResult.data[0].domain;
+
+    let lastRegisterResult: any = helperAccount;
+    let lastLoginResult: any = null;
+
+    for (let attempt = 1; attempt <= 4; attempt++) {
+        const username = `${randomHex(12)}@${chosenDomain}`;
+        const password = randomHex(16);
+
+        const registerResult = await withTimeout(mail.register(username, password), 15000);
+        lastRegisterResult = registerResult;
+
+        if (!registerResult.status) {
+            if (TRANSIENT_STATUS_CODES.has(registerResult?.statusCode)) {
+                await sleep(250 * Math.pow(2, attempt));
+                continue;
+            }
+            continue;
+        }
+
+        const loginResult = await withTimeout(mail.login(username, password), 15000);
+        lastLoginResult = loginResult;
+
+        if (loginResult.status) {
+            return {
+                account: {
+                    status: true,
+                    message: 'ok',
+                    statusCode: registerResult.statusCode,
+                    data: { username, password }
+                },
+                loginResult
+            };
+        }
+
+        if (TRANSIENT_STATUS_CODES.has(loginResult?.statusCode)) {
+            await sleep(250 * Math.pow(2, attempt));
+        }
+    }
+
+    return {
+        account: lastRegisterResult,
+        loginResult: lastLoginResult || { status: false, message: 'Failed to login after registration retries', statusCode: 500, data: '' }
+    };
+};
+
 // Helper function to add timeout to promises
 const withTimeout = <T,>(promise: Promise<T>, timeoutMs: number = 30000): Promise<T> => {
     return Promise.race([
@@ -40,8 +118,8 @@ export async function PUT(request: Request) {
 
 export async function GET( request: Request) {
     try {
-        // Create a new account with timeout
-        const account = await withTimeout(mail.createOneAccount(), 30000);
+        // Create a new account with retries and fallback flow for serverless environments.
+        const { account, loginResult } = await createAccountWithFallback();
         if (!account.status) {
             console.error('GET /api/temp: createOneAccount failed', JSON.stringify(account));
             return NextResponse.json({ 
@@ -50,9 +128,6 @@ export async function GET( request: Request) {
             }, { status: 500 });
         }
 
-        // Login to get the auth token with timeout
-        const loginResult = await withTimeout(mail.login(account.data.username, account.data.password), 15000);
-  
         if (!loginResult.status) {
             console.error('GET /api/temp: login failed', JSON.stringify(loginResult));
             return NextResponse.json({ 
