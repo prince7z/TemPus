@@ -12,9 +12,9 @@ BlackMail is a privacy-focused temporary email service that generates disposable
 
 Watch BlackMail in action:
 
-<div align="center">
+
  <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7393364142973333504?collapsed=1" height="548" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
-</div>
+
 
 ### Video Demo
 ```html
