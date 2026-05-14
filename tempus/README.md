@@ -8,6 +8,25 @@
 
 BlackMail is a privacy-focused temporary email service that generates disposable email addresses instantly—no sign-up required. Perfect for website registrations, online verifications, or testing services while keeping your real inbox safe from spam and unwanted messages.
 
+## Demo
+
+Watch BlackMail in action:
+
+<div align="center">
+  <a href="https://tempus-zvh5.onrender.com" target="_blank">
+    <img src="https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg" alt="BlackMail Demo" width="600" />
+  </a>
+</div>
+
+### Video Demo
+```html
+<iframe width="100%" height="600" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
+        gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+
+Or [view the live demo →](https://tempus-zvh5.onrender.com)
+
 ### Key Features
 
 - ⚡ **Instant Generation** - Create temporary email addresses in seconds
@@ -18,6 +37,20 @@ BlackMail is a privacy-focused temporary email service that generates disposable
 - ⏱️ **Auto-Expiry** - Emails automatically expire after 24 hours
 - 📝 **Blog Integration** - Notion-powered blog for updates and guides
 - 🎯 **Clean UI** - Modern, intuitive interface built with Tailwind CSS
+
+## About This Project
+
+**BlackMail** is an open-source temporary email service designed for developers and privacy-conscious users. This project demonstrates:
+
+- Building a full-stack application with **Next.js 14** and modern web technologies
+- Integration with third-party APIs (MailJS for email, Notion for CMS)
+- Real-time data handling and auto-refresh mechanisms
+- Responsive, accessible UI design with dark mode support
+- Serverless deployment on platforms like Vercel and Render
+
+Whether you're learning about Next.js, API integrations, or building privacy-focused applications, this project is a great reference implementation. Feel free to fork, contribute, or use it as a starting point for your own projects.
+
+**Contributions are welcome!** If you find issues or have feature suggestions, please open an issue or submit a pull request.
 
 ## Tech Stack
 
