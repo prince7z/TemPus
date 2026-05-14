@@ -29,14 +29,14 @@ Or [view the live demo →](https://tempus-zvh5.onrender.com)
 
 ### Key Features
 
-- ⚡ **Instant Generation** - Create temporary email addresses in seconds
-- 🔒 **Privacy First** - No registration or personal information required
-- 📬 **Real-time Updates** - Receive emails instantly with auto-refresh
-- 🌓 **Dark/Light Mode** - Customizable theme for comfortable viewing
-- 📱 **Responsive Design** - Works seamlessly on all devices
-- ⏱️ **Auto-Expiry** - Emails automatically expire after 24 hours
-- 📝 **Blog Integration** - Notion-powered blog for updates and guides
-- 🎯 **Clean UI** - Modern, intuitive interface built with Tailwind CSS
+- **Instant Generation** - Create temporary email addresses in seconds
+- **Privacy First** - No registration or personal information required
+- **Real-time Updates** - Receive emails instantly with auto-refresh
+- **Dark/Light Mode** - Customizable theme for comfortable viewing
+- **Responsive Design** - Works seamlessly on all devices
+- **Auto-Expiry** - Emails automatically expire after 24 hours
+- **Blog Integration** - Notion-powered blog for updates and guides
+- **Clean UI** - Modern, intuitive interface built with Tailwind CSS
 
 ## About This Project
 
@@ -187,4 +187,4 @@ Strict type checking enabled in `tsconfig.json` for enhanced code quality.
 
 
 
-Built with ❤️ using Next.js and TypeScript
+Built with passion using Next.js and TypeScript
