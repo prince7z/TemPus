@@ -2,26 +2,17 @@
 
 > A fast and secure disposable temporary email service built with Next.js
 
-**[Live Demo →](https://tempus-zvh5.onrender.com)**
+**[Live Demo →](https://blackmaill.vercel.app)**
 
 ## Overview
 
 BlackMail is a privacy-focused temporary email service that generates disposable email addresses instantly—no sign-up required. Perfect for website registrations, online verifications, or testing scenarios. 
 
-## Demo
+##  Demo
 
-Watch BlackMail in action:
+Watch **BlackMail** in action:  
 
-<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7393364142973333504?collapsed=1" height="548" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
-
-### Video Demo
-```html
-<iframe width="100%" height="600" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
-        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
-        gyroscope; picture-in-picture" allowfullscreen></iframe>
-```
-
-Or [view the live demo →](https://tempus-zvh5.onrender.com)
+🔗 [Live Demo on LinkedIn](https://www.linkedin.com/posts/princesahu7z_buildinpublic-nextjs-reactjs-activity-7393520305161457664-t2Id?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEaFnScB0lWagwzvRVzYL0Z6FZMEH_tSzLY)
 
 ### Key Features
 
