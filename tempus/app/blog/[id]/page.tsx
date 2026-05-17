@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import Icons from "../../components/Icons";
 import { use } from "react";
@@ -13,6 +13,30 @@ interface BlogPost {
   cover: string | null;
   author: string | null;
   content: any[];
+}
+
+interface NotionRichText {
+  plain_text?: string;
+  href?: string | null;
+  annotations?: {
+    bold?: boolean;
+    italic?: boolean;
+    code?: boolean;
+    strikethrough?: boolean;
+    underline?: boolean;
+    color?: string;
+  };
+  text?: {
+    link?: {
+      url?: string;
+    } | null;
+  };
+}
+
+interface NotionBlock {
+  id?: string;
+  type?: string;
+  [key: string]: any;
 }
 
 export default function BlogPost({ params }: { params: Promise<{ id: string }> }) {
@@ -38,50 +62,152 @@ export default function BlogPost({ params }: { params: Promise<{ id: string }> }
       });
   }, [resolvedParams.id]);
 
-  const renderBlock = (block: any) => {
+  const renderRichText = (richText: NotionRichText[] = []) => {
+    if (richText.length === 0) {
+      return null;
+    }
+
+    return richText.map((text, index) => {
+      let element: ReactNode = text.plain_text || "";
+
+      if (text.annotations?.code) {
+        element = <code key={`code-${index}`}>{element}</code>;
+      }
+      if (text.annotations?.bold) {
+        element = <strong key={`bold-${index}`}>{element}</strong>;
+      }
+      if (text.annotations?.italic) {
+        element = <em key={`italic-${index}`}>{element}</em>;
+      }
+      if (text.annotations?.strikethrough) {
+        element = <s key={`strike-${index}`}>{element}</s>;
+      }
+      if (text.annotations?.underline) {
+        element = <u key={`underline-${index}`}>{element}</u>;
+      }
+
+      const href = text.href || text.text?.link?.url;
+      if (href) {
+        element = (
+          <a key={`link-${index}`} href={href} target="_blank" rel="noopener noreferrer">
+            {element}
+          </a>
+        );
+      }
+
+      return <span key={`span-${index}`}>{element}</span>;
+    });
+  };
+
+  const renderBlock = (block: NotionBlock) => {
     const type = block.type;
-    const content = block[type];
+    const content = type ? block[type] : null;
 
     switch (type) {
       case "paragraph":
-        return (
-          <p className="blog-paragraph">
-            {content.rich_text.map((text: any, i: number) => {
-              let element = text.plain_text;
-              if (text.annotations.bold) element = <strong key={i}>{element}</strong>;
-              if (text.annotations.italic) element = <em key={i}>{element}</em>;
-              if (text.annotations.code) element = <code key={i}>{element}</code>;
-              if (text.href) element = <a key={i} href={text.href} target="_blank" rel="noopener noreferrer">{element}</a>;
-              return element;
-            })}
-          </p>
-        );
+        return <p className="blog-paragraph">{renderRichText(content?.rich_text)}</p>;
       case "heading_1":
-        return <h1 className="blog-h1">{content.rich_text[0]?.plain_text}</h1>;
+        return <h1 className="blog-h1">{renderRichText(content?.rich_text)}</h1>;
       case "heading_2":
-        return <h2 className="blog-h2">{content.rich_text[0]?.plain_text}</h2>;
+        return <h2 className="blog-h2">{renderRichText(content?.rich_text)}</h2>;
       case "heading_3":
-        return <h3 className="blog-h3">{content.rich_text[0]?.plain_text}</h3>;
-      case "bulleted_list_item":
-        return <li className="blog-li">{content.rich_text[0]?.plain_text}</li>;
-      case "numbered_list_item":
-        return <li className="blog-li">{content.rich_text[0]?.plain_text}</li>;
+        return <h3 className="blog-h3">{renderRichText(content?.rich_text)}</h3>;
       case "code":
         return (
           <pre className="blog-code">
-            <code>{content.rich_text[0]?.plain_text}</code>
+            <code>{renderRichText(content?.rich_text)}</code>
           </pre>
         );
       case "quote":
-        return <blockquote className="blog-quote">{content.rich_text[0]?.plain_text}</blockquote>;
+        return <blockquote className="blog-quote">{renderRichText(content?.rich_text)}</blockquote>;
       case "divider":
         return <hr className="blog-divider" />;
-      case "image":
-        const imageUrl = content.external?.url || content.file?.url;
-        return imageUrl ? <img src={imageUrl} alt="Blog image" className="blog-image" /> : null;
+      case "callout":
+        return <div className="blog-callout">{renderRichText(content?.rich_text)}</div>;
+      case "image": {
+        const imageUrl = content?.external?.url || content?.file?.url;
+        const captionText = content?.caption?.[0]?.plain_text || "Blog image";
+        return imageUrl ? (
+          <figure className="blog-image-wrap">
+            <img src={imageUrl} alt={captionText} className="blog-image" />
+            {content?.caption?.length ? (
+              <figcaption className="blog-image-caption">{renderRichText(content.caption)}</figcaption>
+            ) : null}
+          </figure>
+        ) : null;
+      }
+      case "table": {
+        const rows = (block.children || []).filter((child: NotionBlock) => child.type === "table_row");
+        if (rows.length === 0) {
+          return null;
+        }
+
+        return (
+          <div className="blog-table-wrap">
+            <table className="blog-table">
+              <tbody>
+                {rows.map((row: NotionBlock, rowIndex: number) => {
+                  const cells = row.table_row?.cells || [];
+                  return (
+                    <tr key={row.id || rowIndex}>
+                      {cells.map((cell: NotionRichText[], cellIndex: number) => (
+                        <td key={`${row.id || rowIndex}-${cellIndex}`}>{renderRichText(cell)}</td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
       default:
         return null;
     }
+  };
+
+  const renderContent = (blocks: NotionBlock[]) => {
+    const elements: React.ReactNode[] = [];
+    let index = 0;
+
+    while (index < blocks.length) {
+      const block = blocks[index];
+      const type = block?.type;
+
+      if (type === "bulleted_list_item" || type === "numbered_list_item") {
+        const items: NotionBlock[] = [];
+        const listType = type;
+
+        while (index < blocks.length && blocks[index]?.type === listType) {
+          items.push(blocks[index]);
+          index += 1;
+        }
+
+        const ListTag = listType === "bulleted_list_item" ? "ul" : "ol";
+
+        elements.push(
+          <ListTag className="blog-list" key={`${listType}-${items[0]?.id || index}`}>
+            {items.map((item, itemIndex) => (
+              <li className="blog-li" key={item.id || itemIndex}>
+                {renderRichText(item[listType]?.rich_text)}
+              </li>
+            ))}
+          </ListTag>
+        );
+
+        continue;
+      }
+
+      elements.push(
+        <div key={block.id || index} className="blog-block">
+          {renderBlock(block)}
+        </div>
+      );
+
+      index += 1;
+    }
+
+    return elements;
   };
 
   if (loading) {
@@ -152,11 +278,7 @@ export default function BlogPost({ params }: { params: Promise<{ id: string }> }
           )}
         </header>
 
-        <div className="blog-post-content">
-          {post.content.map((block: any, index: number) => (
-            <div key={block.id || index}>{renderBlock(block)}</div>
-          ))}
-        </div>
+        <div className="blog-post-content">{renderContent(post.content as NotionBlock[])}</div>
       </article>
     </div>
   );
