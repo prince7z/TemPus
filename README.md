@@ -2,28 +2,17 @@
 
 > A fast and secure disposable temporary email service built with Next.js
 
-**[Live Demo →](https://tempus-zvh5.onrender.com)**
+**[Live Demo →](https://blackmaill.vercel.app)**
 
 ## Overview
 
-BlackMail is a privacy-focused temporary email service that generates disposable email addresses instantly—no sign-up required. Perfect for website registrations, online verifications, or testing services while keeping your real inbox safe from spam and unwanted messages.
+BlackMail is a privacy-focused temporary email service that generates disposable email addresses instantly—no sign-up required. Perfect for website registrations, online verifications, or testing scenarios. 
 
-## Demo
+##  Demo
 
-Watch BlackMail in action:
+Watch **BlackMail** in action:  
 
-
- <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7393364142973333504?collapsed=1" height="548" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
-
-
-### Video Demo
-```html
-<iframe width="100%" height="600" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
-        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
-        gyroscope; picture-in-picture" allowfullscreen></iframe>
-```
-
-Or [view the live demo →](https://tempus-zvh5.onrender.com)
+🔗 [Live Demo on LinkedIn](https://www.linkedin.com/posts/princesahu7z_buildinpublic-nextjs-reactjs-activity-7393520305161457664-t2Id?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEaFnScB0lWagwzvRVzYL0Z6FZMEH_tSzLY)
 
 ### Key Features
 
@@ -46,7 +35,7 @@ Or [view the live demo →](https://tempus-zvh5.onrender.com)
 - Responsive, accessible UI design with dark mode support
 - Serverless deployment on platforms like Vercel and Render
 
-Whether you're learning about Next.js, API integrations, or building privacy-focused applications, this project is a great reference implementation. Feel free to fork, contribute, or use it as a starting point for your own projects.
+Whether you're learning about Next.js, API integrations, or building privacy-focused applications, this project is a great reference implementation. Feel free to fork, contribute, or use it as a starting point for your own ideas.
 
 **Contributions are welcome!** If you find issues or have feature suggestions, please open an issue or submit a pull request.
 
