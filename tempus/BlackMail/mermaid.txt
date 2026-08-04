@@ -1,0 +1,86 @@
+graph LR
+
+    A[Client Request]
+        --> B[Next.js API Route]
+
+    B --> C{Request Type}
+
+    C -->|Temp Email| D[Mail Service]
+    C -->|Blog| E[Notion Service]
+    C -->|Contact| F[Contact Service]
+
+    D --> G[Mail.tm API]
+    D --> H[(MongoDB)]
+
+    E --> I[Notion API]
+
+    F --> H
+
+    H --> J[Accounts Collection]
+    H --> K[Mails Collection]
+    H --> L[Contacts Collection]
+////////////////////////////////////////////
+sequenceDiagram
+
+    participant User
+    participant API as Next.js API
+    participant MailTM as Mail.tm API
+    participant Mongo as MongoDB
+
+    User->>API: GET /api/temp
+
+    API->>MailTM: createAccount()
+
+    alt Quick Creation Success
+        MailTM-->>API: account + token
+    else Fallback Flow
+        API->>MailTM: getDomains()
+        API->>MailTM: register()
+        API->>MailTM: login()
+        MailTM-->>API: account + token
+    end
+
+    API->>Mongo: Save Account
+
+    Mongo-->>API: Success
+
+    API-->>User: email + token
+//////////////////////////////////////////////////
+graph TB
+
+    subgraph Client Layer
+        A[Web Client]
+        B[Admin Panel]
+    end
+
+    subgraph Next.js Runtime
+        C[API Routes]
+
+        subgraph Backend Modules
+            D1[Temp Mail Service]
+            D2[Blog CMS Service]
+            D3[Contact Service]
+        end
+    end
+
+    subgraph Database Layer
+        E[(MongoDB Atlas)]
+    end
+
+    subgraph External APIs
+        F[Mail.tm API]
+        G[Notion API]
+    end
+
+    A --> C
+    B --> C
+
+    C --> D1
+    C --> D2
+    C --> D3
+
+    D1 --> E
+    D3 --> E
+
+    D1 --> F
+    D2 --> G

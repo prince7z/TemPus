@@ -1,177 +1,243 @@
 # BlackMail
 
-> A fast and secure disposable temporary email service built with Next.js
+> **Fast, Secure, and Anonymous Disposable Temporary Email Service**  
+> Built with Next.js 14 (App Router), TypeScript, Tailwind CSS, MongoDB, and Notion API.
 
-**[Live Demo →](https://blackmaill.vercel.app)**
+<p align="center">
+  <a href="https://blackmaill.vercel.app"><strong>Live Demo</strong></a> •
+  <a href="https://www.linkedin.com/posts/princesahu7z_buildinpublic-nextjs-reactjs-activity-7393520305161457664-t2Id"><strong>Watch Demo on LinkedIn</strong></a>
+</p>
 
-## Overview
+---
 
-BlackMail is a privacy-focused temporary email service that generates disposable email addresses instantly—no sign-up required. Perfect for website registrations, online verifications, or testing scenarios. 
+## Interface & Showcase
 
-##  Demo
+<p align="center">
+  <img src="tempus/BlackMail/Mainpage.webp" alt="BlackMail Main Interface" width="100%" />
+</p>
 
-Watch **BlackMail** in action:  
+<table align="center">
+  <tr>
+    <td width="50%">
+      <h4 align="center">Real-time Inbox & Message Viewer</h4>
+      <img src="tempus/BlackMail/inbox.webp" alt="Disposable Inbox Details" />
+    </td>
+    <td width="50%">
+      <h4 align="center">Notion-Powered Blog</h4>
+      <img src="tempus/BlackMail/Blog_Shot.webp" alt="Notion CMS Blog" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h4 align="center">Interactive Navigation Menu</h4>
+      <img src="tempus/BlackMail/Nav_Shot.webp" alt="Navigation Interface" />
+    </td>
+    <td width="50%">
+      <h4 align="center">Overview & Dual Layout</h4>
+      <img src="tempus/BlackMail/main%202.webp" alt="Overview Dual View" />
+    </td>
+  </tr>
+</table>
 
-🔗 [Live Demo on LinkedIn](https://www.linkedin.com/posts/princesahu7z_buildinpublic-nextjs-reactjs-activity-7393520305161457664-t2Id?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEaFnScB0lWagwzvRVzYL0Z6FZMEH_tSzLY)
+<p align="center">
+  <img src="tempus/BlackMail/footer.webp" alt="BlackMail Footer" width="100%" />
+</p>
 
-### Key Features
+---
 
-- **Instant Generation** - Create temporary email addresses in seconds
-- **Privacy First** - No registration or personal information required
-- **Real-time Updates** - Receive emails instantly with auto-refresh
-- **Dark/Light Mode** - Customizable theme for comfortable viewing
-- **Responsive Design** - Works seamlessly on all devices
-- **Auto-Expiry** - Emails automatically expire after 24 hours
-- **Blog Integration** - Notion-powered blog for updates and guides
-- **Clean UI** - Modern, intuitive interface built with Tailwind CSS
+## Key Features
 
-## About This Project
+- **Instant Email Generation** — Create disposable email addresses instantly with zero sign-up or registration.
+- **Privacy-First Architecture** — Protect your real email address from spam, trackers, and phishing attempts.
+- **Real-Time Auto Refresh** — Receive incoming emails instantly with visual notifications.
+- **Countdown Timer** — Interactive expiration timer with extended session options.
+- **Dark & Light Mode** — Seamless theme toggle with persistent preferences.
+- **Headless CMS Integration** — Fully dynamic blog system backed by Notion API.
+- **Fully Responsive** — Beautiful UI optimized for desktop, tablet, and mobile devices.
 
-**BlackMail** is an open-source temporary email service designed for developers and privacy-conscious users. This project demonstrates:
+---
 
-- Building a full-stack application with **Next.js 14** and modern web technologies
-- Integration with third-party APIs (MailJS for email, Notion for CMS)
-- Real-time data handling and auto-refresh mechanisms
-- Responsive, accessible UI design with dark mode support
-- Serverless deployment on platforms like Vercel and Render
+## Architecture & System Design
 
-Whether you're learning about Next.js, API integrations, or building privacy-focused applications, this project is a great reference implementation. Feel free to fork, contribute, or use it as a starting point for your own ideas.
+### 1. System Layer Overview
+```mermaid
+graph TB
+    subgraph Client Layer
+        A[Web Client]
+        B[Admin Panel]
+    end
 
-**Contributions are welcome!** If you find issues or have feature suggestions, please open an issue or submit a pull request.
+    subgraph Next.js Runtime
+        C[API Routes]
+
+        subgraph Backend Modules
+            D1[Temp Mail Service]
+            D2[Blog CMS Service]
+            D3[Contact Service]
+        end
+    end
+
+    subgraph Database Layer
+        E[(MongoDB Atlas)]
+    end
+
+    subgraph External APIs
+        F[Mail.tm API]
+        G[Notion API]
+    end
+
+    A --> C
+    B --> C
+
+    C --> D1
+    C --> D2
+    C --> D3
+
+    D1 --> E
+    D3 --> E
+
+    D1 --> F
+    D2 --> G
+```
+
+### 2. Temporary Email Generation Flow
+```mermaid
+sequenceDiagram
+    autonumber
+    participant User
+    participant API as Next.js API
+    participant MailTM as Mail.tm API
+    participant Mongo as MongoDB Atlas
+
+    User->>API: GET /api/temp
+    API->>MailTM: createAccount()
+
+    alt Quick Creation Success
+        MailTM-->>API: account + token
+    else Fallback Flow
+        API->>MailTM: getDomains()
+        API->>MailTM: register()
+        API->>MailTM: login()
+        MailTM-->>API: account + token
+    end
+
+    API->>Mongo: Save Account
+    Mongo-->>API: Success
+    API-->>User: email + token
+```
+
+### 3. Request Routing & Data Pipeline
+```mermaid
+graph LR
+    A[Client Request]
+        --> B[Next.js API Route]
+
+    B --> C{Request Type}
+
+    C -->|Temp Email| D[Mail Service]
+    C -->|Blog| E[Notion Service]
+    C -->|Contact| F[Contact Service]
+
+    D --> G[Mail.tm API]
+    D --> H[(MongoDB)]
+
+    E --> I[Notion API]
+
+    F --> H
+
+    H --> J[Accounts Collection]
+    H --> K[Mails Collection]
+    H --> L[Contacts Collection]
+```
+
+---
 
 ## Tech Stack
 
-- **Framework:** [Next.js 14](https://nextjs.org/) (App Router)
-- **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
-- **Email Service:** [@cemalgnlts/mailjs](https://www.npmjs.com/package/@cemalgnlts/mailjs)
-- **CMS:** [Notion API](https://developers.notion.com/)
-- **Deployment:** Vercel (recommended)
+| Category | Technology |
+|---|---|
+| **Framework** | [Next.js 14](https://nextjs.org/) (App Router) |
+| **Language** | [TypeScript](https://www.typescriptlang.org/) |
+| **Styling** | [Tailwind CSS 4](https://tailwindcss.com/) |
+| **Email Protocol / API** | [Mail.tm API](https://mail.tm/) (`@cemalgnlts/mailjs`) |
+| **Database** | [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) |
+| **Headless CMS** | [Notion API](https://developers.notion.com/) |
+| **Deployment** | [Vercel](https://vercel.com/) / [Render](https://render.com/) |
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18.x or higher
-- npm, yarn, pnpm, or bun package manager
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/prince7z/tempus.git
-cd tempus
-```
-
-2. Install dependencies:
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
-```
-
-3. Set up environment variables (if needed):
-```bash
-# Create a .env.local file for Notion integration (optional)
-# NOTION_API_KEY=your_notion_api_key
-# NOTION_DATABASE_ID=your_notion_database_id
-```
-
-4. Run the development server:
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
-
-### Build for Production
-
-```bash
-npm run build
-npm start
-```
+---
 
 ## Project Structure
 
 ```
 tempus/
 ├── app/
-│   ├── api/              # API routes
-│   │   ├── blog/         # Blog API endpoints
-│   │   └── temp/         # Temporary email API
-│   ├── blog/             # Blog pages
-│   ├── components/       # Reusable React components
-│   │   ├── Dialog.tsx
-│   │   ├── Icons.tsx
-│   │   ├── PremiumDialog.tsx
-│   │   ├── ThemeProvider.tsx
-│   │   ├── ThemeToggle.tsx
-│   │   └── Toast.tsx
-│   ├── links/            # Links/resources page
-│   ├── globals.css       # Global styles
-│   ├── layout.tsx        # Root layout
-│   └── page.tsx          # Home page
-├── public/               # Static assets
-└── [config files]        # TypeScript, Tailwind, Next.js configs
+│   ├── api/              # API routes (temp email, blog, contact)
+│   │   ├── blog/         # Notion CMS blog endpoints
+│   │   └── temp/         # Temporary email generation & management
+│   ├── blog/             # Notion blog rendering pages
+│   ├── components/       # UI components (Dialog, ThemeProvider, Toast, etc.)
+│   ├── links/            # Resource links page
+│   ├── globals.css       # Global CSS & Tailwind custom styles
+│   ├── layout.tsx        # Root layout & providers
+│   └── page.tsx          # Main application homepage
+├── public/               # Static web assets & icons
+└── BlackMail/            # Documentation screenshots & mermaid diagrams
 ```
 
-## Features in Detail
+---
 
-### Temporary Email Generation
-- Generates disposable email addresses using the MailJS API
-- 10-minute countdown timer with visual progress indicator
-- Copy email address to clipboard functionality
-- Automatic cleanup after expiration
+## Getting Started
 
-### Email Management
-- Real-time email inbox with auto-refresh
-- View email details in a modal dialog
-- HTML content rendering support
-- Message timestamp and sender information
+### Prerequisites
+- **Node.js**: `18.x` or higher
+- **Package Manager**: `npm`, `yarn`, `pnpm`, or `bun`
 
-### Theme System
-- Light and dark mode support
-- Persistent theme preference using localStorage
-- Smooth theme transitions
+### Installation
 
-### Blog System
-- Integration with Notion as a headless CMS
-- Dynamic blog post listing and individual post pages
-- Tags and cover image support
-- SEO-friendly routing
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/prince7z/tempus.git
+   cd tempus
+   ```
 
-## API Routes
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-### `/api/temp`
-- **GET:** Generates a new temporary email address
-- Returns email address, ID, and authentication token
+3. **Configure Environment Variables** (Optional for Notion CMS & MongoDB)
+   Create a `.env.local` file in `tempus/`:
+   ```env
+   NOTION_API_KEY=your_notion_api_key
+   NOTION_DATABASE_ID=your_notion_database_id
+   MONGODB_URI=your_mongodb_connection_string
+   ```
 
-### `/api/blog`
-- **GET:** Fetches all blog posts from Notion database
-- Returns array of blog posts with metadata
+4. **Run Development Server**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### `/api/blog/[id]`
-- **GET:** Fetches a specific blog post by ID
-- Returns detailed blog post content
+5. **Build for Production**
+   ```bash
+   npm run build
+   npm start
+   ```
 
-## Configuration
+---
 
-### Tailwind CSS
-Custom configuration in `tailwind.config.js` with theme extensions and custom utilities.
+## API Endpoints
 
-### TypeScript
-Strict type checking enabled in `tsconfig.json` for enhanced code quality.
+### Temporary Mail Routes
+- `GET /api/temp` — Generates a new temporary email account and returns credentials/JWT token.
 
+### Blog Routes (Notion Integration)
+- `GET /api/blog` — Fetches list of published blog posts from Notion database.
+- `GET /api/blog/[id]` — Fetches detailed content for a single blog post.
 
+---
 
-Built with passion using Next.js and TypeScript
+## License & Acknowledgments
+
+Distributed under the MIT License. Built with passion for privacy and seamless developer user experiences.
