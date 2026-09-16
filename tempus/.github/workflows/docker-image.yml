@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: prince7z/tempus
 
 jobs:
   build-and-push:
@@ -61,7 +61,7 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u "${{ github.actor }}" --password-stdin
             
             # Pull latest pre-built image
-            sudo docker pull ghcr.io/${{ github.repository }}:latest
+            sudo docker pull ghcr.io/prince7z/tempus:latest
             
             # Stop and remove old container
             sudo docker stop tempus-app || true
@@ -74,7 +74,7 @@ jobs:
               --restart always \
               -p 3000:3000 \
               --env-file .env \
-              ghcr.io/${{ github.repository }}:latest
+              ghcr.io/prince7z/tempus:latest
 
             # Clean up old images
             sudo docker image prune -f
