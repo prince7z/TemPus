@@ -1,0 +1,26 @@
+# BlackMail - Temporary & Disposable Email Service
+
+> BlackMail is a fast, privacy-focused, and secure temporary email service. Generate disposable email addresses instantly with zero sign-up or registration.
+
+## Core Features
+- **Instant Temp Mail Generation**: Create temporary email addresses in one click.
+- **Privacy Protection**: Avoid spam, phishing, and tracking by keeping your real email private.
+- **Auto-Deletion**: Emails automatically expire and are wiped safely from servers.
+- **No Registration Required**: No passwords, phone numbers, or personal data collected.
+- **API Access**: Access disposable email mailboxes programmatically via API endpoints.
+
+## Main Pages
+- [Home Page](https://blackmail.pcodes.tech/): Generate temporary emails and view live inbox.
+- [Blog](https://blackmail.pcodes.tech/blog): Articles on email privacy, disposable emails, and online security.
+- [Policy & Privacy](https://blackmail.pcodes.tech/policy): Terms of service, privacy guarantee, and usage guidelines.
+- [Links](https://blackmail.pcodes.tech/links): Community links and developer contacts.
+
+## API References
+- `GET /api/temp`: Generate a new disposable email address and session token.
+- `GET /api/contact`: Send support or contact inquiries.
+- `GET /api/blog`: Fetch latest blog posts from Notion integration.
+- `GET /api/blog/:id`: Fetch specific blog post details and content.
+
+## Technical Details
+- Built with Next.js 16 (App Router), React 18, and Docker.
+- Hosted Domain: https://blackmail.pcodes.tech
