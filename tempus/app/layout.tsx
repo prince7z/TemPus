@@ -26,6 +26,8 @@ export const metadata: Metadata = {
     "10 minute mail",
     "anonymous email",
     "anti spam email",
+    "burn after read mail",
+    
     "blackmail temp mail",
   ],
   authors: [{ name: "BlackMail" }],
