@@ -1,0 +1,22 @@
+# Node & Build artifacts
+node_modules
+.next
+out
+build
+dist
+
+# Environment variables
+.env*.local
+.env
+
+# Git & IDE
+.git
+.gitignore
+.vscode
+.idea
+*.md
+README.md
+
+# OS files
+.DS_Store
+Thumbs.db
