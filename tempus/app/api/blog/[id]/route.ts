@@ -12,15 +12,15 @@ export async function GET(
   try {
     const { id: pageId } = await params;
 
-    const fetchBlockChildren = async (blockId: string) => {
+    const fetchBlockChildren = async (blockId: string): Promise<any[]> => {
       const children = await notion.blocks.children.list({
         block_id: blockId,
       });
 
       return Promise.all(
-        children.results.map(async (child: any) => {
+        children.results.map(async (child: any): Promise<any> => {
           if (child.has_children) {
-            const nested = await fetchBlockChildren(child.id);
+            const nested: any[] = await fetchBlockChildren(child.id);
             return { ...child, children: nested };
           }
 
