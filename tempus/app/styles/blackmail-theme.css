@@ -193,30 +193,30 @@ body {
 /* Main Content */
 .main-content {
   flex: 1;
-  max-width: 900px; /* Reduced from 1200px */
+  max-width: 740px;
   margin: 0 auto;
-  padding: 1rem; /* Reduced from 2rem */
-  padding-top: 90px; /* Add top padding to clear fixed navbar */
+  padding: 0.75rem;
+  padding-top: 65px;
   width: 100%;
 }
 
 /* Email Section */
 .email-section {
-  margin-bottom: 2rem; /* Reduced from 3rem */
+  margin-bottom: 1.25rem;
 }
 
 .email-card {
   background-color: var(--bg-secondary);
   border: 2px solid var(--border);
-  border-radius: 0.75rem; /* Reduced from 1rem */
-  padding: 1.25rem; /* Reduced from 2rem */
-  box-shadow: 0 2px 4px var(--shadow); /* Reduced shadow */
-  margin-top: 2rem;
+  border-radius: 0.6rem;
+  padding: 1rem;
+  box-shadow: 0 2px 4px var(--shadow);
+  margin-top: 1rem;
 }
 
 .email-card h2 {
-  margin: 0 0 1rem 0; /* Reduced from 1.5rem */
-  font-size: 1.25rem; /* Reduced from 1.5rem */
+  margin: 0 0 0.75rem 0;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -224,17 +224,17 @@ body {
 .email-display-area {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .email-input-wrapper {
   display: flex;
   align-items: center;
-  gap: 0.4rem; /* Reduced from 0.5rem */
+  gap: 0.4rem;
   background-color: var(--bg-primary);
   border: 2px solid var(--border);
-  border-radius: 0.4rem; /* Reduced from 0.5rem */
-  padding: 0.5rem; /* Reduced from 0.75rem */
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.6rem;
 }
 
 .email-input {
@@ -242,7 +242,7 @@ body {
   background: transparent;
   border: none;
   outline: none;
-  font-size: 0.875rem; /* Reduced from 1rem */
+  font-size: 0.825rem;
   color: var(--text-primary);
   font-family: monospace;
 }
@@ -251,7 +251,7 @@ body {
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border);
   border-radius: 0.25rem;
-  padding: 0.4rem; /* Reduced from 0.5rem */
+  padding: 0.35rem;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -271,22 +271,23 @@ body {
   color: var(--text-secondary);
   font-weight: 600;
   font-family: monospace;
+  font-size: 0.875rem;
 }
 
 .action-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
 }
 
 .action-buttons button {
-  padding: 0.5rem 1rem; /* Reduced from 0.75rem 1.5rem */
+  padding: 0.4rem 0.85rem;
   border: 2px solid var(--border);
-  border-radius: 0.4rem; /* Reduced from 0.5rem */
+  border-radius: 0.4rem;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-weight: 500;
-  font-size: 0.875rem; /* Added smaller font size */
+  font-size: 0.825rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -319,11 +320,11 @@ body {
   background-color: var(--accent);
   color: var(--bg-primary);
   border: 2px solid var(--accent);
-  padding: 0.75rem 1.5rem; /* Reduced from 1rem 2rem */
-  border-radius: 0.4rem; /* Reduced from 0.5rem */
-  font-size: 1rem; /* Reduced from 1.1rem */
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.4rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  margin-top: 4rem;
+  margin-top: 1.25rem;
   cursor: pointer;
   transition: all 0.3s ease;
   align-self: center;
@@ -342,39 +343,41 @@ body {
 .loading-indicator {
   display: flex;
   justify-content: center;
-  padding: 1rem;
+  padding: 0.75rem;
   color: var(--text-secondary);
   font-style: italic;
+  font-size: 0.85rem;
 }
 
 .error-message {
   color: #dc3545;
   font-weight: 500;
   margin: 0.5rem 0 0 0;
+  font-size: 0.85rem;
 }
 
 /* Inbox Section */
 .inbox-section {
-  margin-bottom: 2rem; /* Reduced from 3rem */
+  margin-bottom: 1.25rem;
 }
 
 .inbox-card {
   background-color: var(--bg-secondary);
   border: 2px solid var(--border);
-  border-radius: 0.75rem; /* Reduced from 1rem */
-  padding: 1.25rem; /* Reduced from 2rem */
-  box-shadow: 0 2px 4px var(--shadow); /* Reduced shadow */
+  border-radius: 0.6rem;
+  padding: 1rem;
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .inbox-title {
-  margin: 0 0 1rem 0; /* Reduced from 1.5rem */
-  font-size: 1.1rem; /* Reduced from 1.25rem */
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .inbox-list {
-  min-height: 150px; /* Reduced from 200px */
+  min-height: 100px;
   display: flex;
   flex-direction: column;
 }
@@ -445,15 +448,16 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 200px;
+  height: 120px;
   color: var(--text-tertiary);
   text-align: center;
+  font-size: 0.85rem;
 }
 
 .empty-inbox-icon {
-  width: 3rem;
-  height: 3rem;
-  margin-bottom: 1rem;
+  width: 2rem;
+  height: 2rem;
+  margin-bottom: 0.5rem;
   opacity: 0.5;
 }
 
@@ -614,30 +618,30 @@ body {
 .two-column-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem; /* Reduced from 3rem */
-  margin-bottom: 2rem; /* Reduced from 3rem */
+  gap: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .faq-column {
   background-color: var(--bg-secondary);
   border: 2px solid var(--border);
-  border-radius: 0.75rem; /* Reduced from 1rem */
-  padding: 1.25rem; /* Reduced from 2rem */
+  border-radius: 0.6rem;
+  padding: 1rem;
 }
 
 .blog-column {
   background-color: var(--bg-secondary);
   border: 2px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1.25rem;
+  border-radius: 0.6rem;
+  padding: 1rem;
   overflow: hidden;
   box-sizing: border-box;
 }
 
 .faq-column h2,
 .blog-column h2 {
-  margin: 0 0 1.25rem 0; /* Reduced from 2rem */
-  font-size: 1.4rem; /* Reduced from 1.75rem */
+  margin: 0 0 0.75rem 0;
+  font-size: 1.15rem;
   font-weight: 700;
   text-align: center;
   color: var(--text-primary);
@@ -646,8 +650,8 @@ body {
 .faq-item {
   background-color: var(--bg-secondary);
   border: 2px solid var(--border);
-  border-radius: 0.5rem; /* Reduced from 0.75rem */
-  margin-bottom: 0.75rem; /* Reduced from 1rem */
+  border-radius: 0.4rem;
+  margin-bottom: 0.5rem;
   overflow: hidden;
   transition: all 0.3s ease;
 }
@@ -658,11 +662,11 @@ body {
 
 .faq-question {
   width: 100%;
-  padding: 1rem; /* Reduced from 1.5rem */
+  padding: 0.6rem 0.85rem;
   background: none;
   border: none;
   text-align: left;
-  font-size: 0.95rem; /* Reduced from 1.1rem */
+  font-size: 0.825rem;
   font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;
@@ -677,10 +681,11 @@ body {
 }
 
 .faq-answer {
-  padding: 0 1rem 1rem; /* Reduced from 0 1.5rem 1.5rem */
+  padding: 0 0.85rem 0.75rem;
   margin: 0;
   color: var(--text-secondary);
-  line-height: 1.5; /* Reduced from 1.6 */
+  line-height: 1.45;
+  font-size: 0.8rem;
   display: none;
 }
 
@@ -1182,31 +1187,31 @@ body {
   background-color: var(--bg-secondary);
   border-top: 2px solid var(--border);
   margin-top: auto;
-  padding: 3rem 0 1rem;
+  padding: 1.5rem 0 1rem;
 }
 
 .footer-content {
-  max-width: 1200px;
+  max-width: 740px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.25rem;
 }
 
 .footer-section h4 {
-  margin: 0 0 1rem 0;
-  font-size: 1.125rem;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 /* Footer logo styling */
 .footer-logo {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   height: auto;
   width: auto;
-  max-width: 180px;
+  max-width: 120px;
 }
 
 [data-theme="dark"] .footer-logo {
@@ -1214,18 +1219,19 @@ body {
 }
 
 .footer-section .blackmail-logo {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .footer-section .blackmail-logo svg {
-  height: 32px;
+  height: 24px;
   width: auto;
 }
 
 .footer-description {
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.4;
   margin: 0;
+  font-size: 0.775rem;
 }
 
 .footer-section ul {
@@ -1235,7 +1241,8 @@ body {
 }
 
 .footer-section li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
 }
 
 .footer-section a {
@@ -1250,15 +1257,15 @@ body {
 
 .social-links {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .social-links a {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   background-color: var(--bg-tertiary);
   border-radius: 50%;
   transition: all 0.3s ease;
@@ -1270,34 +1277,35 @@ body {
 }
 
 .footer-bottom {
-  max-width: 1200px;
-  margin: 2rem auto 0;
-  padding: 2rem 2rem 0;
+  max-width: 740px;
+  margin: 1rem auto 0;
+  padding: 1rem 1rem 0;
   border-top: 1px solid var(--border);
   text-align: center;
   color: var(--text-tertiary);
+  font-size: 0.75rem;
 }
 
 /* Contact Section */
 .contact-section {
-  margin-bottom: 2rem; /* Reduced from 3rem */
-  width: 100%; /* Ensure full width */
+  margin-bottom: 1.25rem;
+  width: 100%;
 }
 
 .contact-card {
   background-color: var(--bg-secondary);
   border: 2px solid var(--border);
-  border-radius: 0.75rem; /* Reduced from 1rem */
-  padding: 1.25rem; /* Match FAQ/Blog column padding */
-  box-shadow: 0 2px 4px var(--shadow); /* Reduced shadow */
-  max-width: 100%; /* Changed from 450px to 100% */
-  width: 100%; /* Full width */
-  margin: 0; /* Remove auto centering */
+  border-radius: 0.6rem;
+  padding: 1rem;
+  box-shadow: 0 2px 4px var(--shadow);
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
 }
 
 .contact-card h2 {
-  margin: 0 0 0.5rem 0; /* Reduced from 0.75rem */
-  font-size: 1.25rem; /* Reduced from 1.5rem */
+  margin: 0 0 0.35rem 0;
+  font-size: 1.15rem;
   font-weight: 700;
   text-align: center;
   color: var(--text-primary);
@@ -1306,42 +1314,48 @@ body {
 .contact-description {
   text-align: center;
   color: var(--text-secondary);
-  margin-bottom: 1rem; /* Reduced from 1.5rem */
-  font-size: 0.875rem; /* Reduced from 1rem */
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
 }
 
 .contact-form {
-  margin: 0 0 1rem; /* Reduced from 1.5rem */
+  margin: 0 0 0.75rem;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .form-group label {
   color: var(--text-primary);
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.825rem;
 }
 
 .form-group input,
 .form-group textarea {
   background-color: var(--bg-primary);
   border: 2px solid var(--border);
-  border-radius: 0.4rem; /* Reduced from 0.5rem */
-  padding: 0.5rem; /* Reduced from 0.75rem */
-  font-size: 0.875rem; /* Reduced from 1rem */
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.825rem;
   color: var(--text-primary);
   transition: border-color 0.3s ease;
+}
+
+.form-group textarea {
+  min-height: 80px;
+  max-height: 120px;
 }
 
 .form-group input:focus,
@@ -1354,9 +1368,9 @@ body {
   background-color: var(--accent);
   color: var(--bg-primary);
   border: 2px solid var(--accent);
-  padding: 0.75rem 1.5rem; /* Reduced from 1rem 2rem */
-  border-radius: 0.4rem; /* Reduced from 0.5rem */
-  font-size: 0.95rem; /* Reduced from 1.1rem */
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1371,16 +1385,17 @@ body {
 .contact-info {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.25rem;
   flex-wrap: wrap;
 }
 
 .contact-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   color: var(--text-secondary);
   font-weight: 500;
+  font-size: 0.8rem;
 }
 
 /* Buy Email Dialog Styles */

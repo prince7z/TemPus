@@ -1,23 +1,23 @@
 .card-nav-container {
   position: absolute;
-  top: 2em;
+  top: 0.75rem;
   left: 50%;
   transform: translateX(-50%);
 
-  width: 90%;
-  max-width: 800px;
+  width: 92%;
+  max-width: 720px;
   z-index: 99;
   box-sizing: border-box;
 }
 
 .card-nav {
   display: block;
-  height: 60px;
+  height: 48px;
   padding: 0;
   background-color: white;
   border: 0.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0.6rem;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
   position: relative;
   overflow: hidden;
   will-change: height;
@@ -28,11 +28,11 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.75rem;
   z-index: 2;
 }
 
@@ -42,10 +42,10 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  gap: 6px;
-  padding: 0.5rem;
-  min-width: 44px;
-  height: 44px;
+  gap: 4px;
+  padding: 0.25rem;
+  min-width: 36px;
+  height: 36px;
 }
 
 .hamburger-menu:hover .hamburger-line {
@@ -53,7 +53,7 @@
 }
 
 .hamburger-line {
-  width: 30px;
+  width: 22px;
   height: 2px;
   background-color: currentColor;
   transition:
@@ -64,11 +64,11 @@
 }
 
 .hamburger-menu.open .hamburger-line:first-child {
-  transform: translateY(4px) rotate(45deg);
+  transform: translateY(3px) rotate(45deg);
 }
 
 .hamburger-menu.open .hamburger-line:last-child {
-  transform: translateY(-4px) rotate(-45deg);
+  transform: translateY(-3px) rotate(-45deg);
 }
 
 .logo-container {
@@ -81,7 +81,7 @@
 }
 
 .logo {
-  height: 49px;
+  height: 28px;
 }
 
 .card-nav-cta-button {
@@ -89,9 +89,9 @@
   color: white;
   border: none;
   border-radius: calc(0.5rem - 0.35rem);
-  padding: 0.3rem 1rem;
+  padding: 0.25rem 0.6rem;
   height: auto;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -108,7 +108,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 60px;
+  top: 48px;
   bottom: 0;
   padding: 0.5rem;
   display: flex;
