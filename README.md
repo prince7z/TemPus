@@ -4,7 +4,7 @@
 > Built with Next.js 14 (App Router), TypeScript, Tailwind CSS, MongoDB, and Notion API.
 
 <p align="center">
-  <a href="https://blackmaill.vercel.app"><strong>Live Demo</strong></a> •
+  <a href="https://blackmail.pcodes.tech"><strong>Live Demo</strong></a> •
   <a href="https://www.linkedin.com/posts/princesahu7z_buildinpublic-nextjs-reactjs-activity-7393520305161457664-t2Id"><strong>Watch Demo on LinkedIn</strong></a>
 </p>
 
